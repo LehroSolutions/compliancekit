@@ -1,0 +1,12 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.venv/
+venv/
+
+webapp/data.json
+webapp/data.sqlite
+
+.env
+advertising video/

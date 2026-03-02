@@ -1,0 +1,1046 @@
+﻿<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ComplianceKit â€” POPIA Radar 2.0</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400..700&family=JetBrains+Mono:wght@400;700&family=Syne:wght@400..800&display=swap"
+    rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #09090b;
+      --surface: #121214;
+      --surface-hover: #1c1c1f;
+      --border: #27272a;
+
+      --text-main: #f4f4f5;
+      --text-muted: #a1a1aa;
+
+      --accent: #E2FF33;
+      --accent-hover: #D1EB20;
+
+      --danger: #ff4545;
+      --warning: #ffb800;
+      --success: #00e676;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text-main);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
+    }
+
+    h1,
+    h2,
+    h3,
+    .brand {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      text-transform: uppercase;
+    }
+
+    .mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* LAYOUT */
+    .app-container {
+      display: grid;
+      grid-template-columns: 320px 1fr 380px;
+      min-height: calc(100vh - 80px);
+      border-top: 1px solid var(--border);
+    }
+
+    @media (max-width: 1200px) {
+      .app-container {
+        grid-template-columns: 280px 1fr;
+      }
+
+      .right-rail {
+        grid-column: 1 / -1;
+        border-top: 1px solid var(--border);
+        border-left: none !important;
+      }
+    }
+
+    @media (max-width: 800px) {
+      .app-container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* TOPBAR */
+    .topbar {
+      height: 80px;
+      padding: 0 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      background: rgba(9, 9, 11, 0.85);
+      backdrop-filter: blur(12px);
+      z-index: 50;
+    }
+
+    .brand {
+      font-size: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .brand-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem;
+      background: var(--text-main);
+      color: var(--bg);
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      font-weight: 700;
+    }
+
+    .status-pill {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      padding: 0.4rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: var(--text-muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.3s ease;
+    }
+
+    .status-pill::before {
+      content: '';
+      display: block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    .status-pill.active {
+      border-color: var(--success);
+      color: var(--success);
+      box-shadow: inset 0 0 0 1px rgba(0, 230, 118, 0.2);
+    }
+
+    .status-pill.active::before {
+      box-shadow: 0 0 8px currentColor;
+    }
+
+    /* RAILS */
+    .rail {
+      padding: 2.5rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 3rem;
+    }
+
+    .left-rail {
+      border-right: 1px solid var(--border);
+      background: var(--surface);
+    }
+
+    .main-channel {
+      padding: 3rem;
+      display: flex;
+      flex-direction: column;
+      gap: 3rem;
+    }
+
+    .right-rail {
+      border-left: 1px solid var(--border);
+      background: var(--surface);
+    }
+
+    /* TYPOGRAPHY COMPONENTS */
+    .section-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.5rem;
+      margin-bottom: 1.5rem;
+      letter-spacing: 0.05em;
+    }
+
+    /* INPUTS */
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .field label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+
+    .field input,
+    .field textarea {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border);
+      padding: 0.8rem 1rem;
+      color: var(--text-main);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      border-radius: 2px;
+      width: 100%;
+    }
+
+    .field input:focus,
+    .field textarea:focus {
+      outline: none;
+      border-color: var(--text-main);
+      background: transparent;
+    }
+
+    .field textarea {
+      resize: vertical;
+      min-height: 160px;
+      line-height: 1.6;
+    }
+
+    /* BUTTONS */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.9rem 1.5rem;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border: 1px solid var(--text-main);
+      background: var(--text-main);
+      color: var(--bg);
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      border-radius: 2px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.1);
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .btn:hover {
+      background: transparent;
+      color: var(--text-main);
+    }
+
+    .btn:hover::after {
+      transform: translateX(100%);
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    .btn--accent {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: var(--bg);
+    }
+
+    .btn--accent:hover {
+      background: transparent;
+      color: var(--accent);
+      box-shadow: inset 0 0 0 1px var(--accent);
+    }
+
+    /* LOADING STATE */
+    .btn.loading {
+      color: transparent !important;
+      pointer-events: none;
+    }
+
+    .btn.loading::before {
+      content: '';
+      position: absolute;
+      width: 1.2rem;
+      height: 1.2rem;
+      border: 2px solid currentColor;
+      border-right-color: transparent;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      color: inherit;
+      z-index: 2;
+    }
+
+    .btn--accent.loading::before {
+      color: var(--bg);
+    }
+
+    .btn--accent:hover.loading::before {
+      color: var(--accent);
+    }
+
+    .btn.loading:hover::before {
+      color: var(--text-main);
+    }
+
+    @keyframes spin {
+      100% {
+        transform: translate(-50%, -50%) rotate(360deg);
+      }
+    }
+
+    /* AUTH FEEDBACK */
+    .auth-msg {
+      font-size: 0.8rem;
+      margin-top: 1rem;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .auth-msg.err {
+      color: var(--danger);
+    }
+
+    .auth-msg.ok {
+      color: var(--success);
+    }
+
+    /* FINDING & SUMMARY MODULES */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      margin-bottom: 2rem;
+    }
+
+    .summary-box {
+      background: var(--bg);
+      padding: 1.5rem 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .summary-val {
+      font-family: 'Syne', sans-serif;
+      font-size: 2.5rem;
+      font-weight: 700;
+      line-height: 1;
+      margin-bottom: 0.5rem;
+    }
+
+    .summary-val.accent {
+      color: var(--accent);
+    }
+
+    .summary-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .finding-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 1.5rem;
+      padding: 1.25rem;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.01);
+      margin-bottom: 0.5rem;
+      animation: revealSlide 0.4s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+      transition: all 0.2s;
+    }
+
+    .finding-item:hover {
+      background: rgba(255, 255, 255, 0.03);
+      border-color: var(--text-muted);
+    }
+
+    .f-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      font-weight: 700;
+      white-space: nowrap;
+      min-width: 90px;
+      text-align: center;
+    }
+
+    .badge-critical {
+      background: rgba(255, 69, 69, 0.1);
+      color: var(--danger);
+      box-shadow: inset 0 0 0 1px rgba(255, 69, 69, 0.2);
+    }
+
+    .badge-high {
+      background: rgba(255, 184, 0, 0.1);
+      color: var(--warning);
+      box-shadow: inset 0 0 0 1px rgba(255, 184, 0, 0.2);
+    }
+
+    .badge-medium {
+      background: rgba(0, 230, 118, 0.1);
+      color: var(--success);
+      box-shadow: inset 0 0 0 1px rgba(0, 230, 118, 0.2);
+    }
+
+    .f-content {
+      flex: 1;
+    }
+
+    .f-value {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.95rem;
+      margin-bottom: 0.4rem;
+      color: var(--text-main);
+    }
+
+    .f-meta {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    @keyframes revealSlide {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* DATA TABLES */
+    .data-matrix {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+    }
+
+    .data-matrix th {
+      text-align: left;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    .data-matrix td {
+      padding: 0.75rem 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      color: var(--text-main);
+    }
+
+    .data-matrix tr:last-child td {
+      border-bottom: none;
+    }
+
+    .data-matrix tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    /* AI REMEDIATION PANEL */
+    .ai-panel {
+      border: 1px solid var(--border);
+      background: rgba(0, 0, 0, 0.4);
+      padding: 1.5rem;
+      position: relative;
+    }
+
+    .ai-panel::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 3px;
+      height: 100%;
+      background: var(--accent);
+    }
+
+    .ai-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .ai-header .section-label {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .ai-plan-action {
+      background: var(--surface-hover);
+      padding: 1.25rem;
+      margin-bottom: 0.75rem;
+      border-left: 2px solid var(--text-muted);
+    }
+
+    .ai-plan-action.sev-critical {
+      border-left-color: var(--danger);
+    }
+
+    .ai-plan-action.sev-high {
+      border-left-color: var(--warning);
+    }
+
+    .ai-plan-action.sev-medium {
+      border-left-color: var(--accent);
+    }
+
+    .ai-plan-head {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .ai-plan-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+    }
+
+    .ai-plan-time {
+      margin-left: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+
+    .ai-plan-conditions {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+    }
+
+    .ai-plan-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .ai-plan-list li {
+      font-size: 0.85rem;
+      padding-left: 1.25rem;
+      position: relative;
+      line-height: 1.5;
+    }
+
+    .ai-plan-list li::before {
+      content: 'â†’';
+      position: absolute;
+      left: 0;
+      color: var(--text-muted);
+    }
+
+    /* TOASTS */
+    .toast-zone {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      z-index: 999;
+    }
+
+    .toast {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 1rem 1.25rem;
+      color: var(--text-main);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+      animation: toastSlide 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .toast.err {
+      border-left: 3px solid var(--danger);
+    }
+
+    .toast.ok {
+      border-left: 3px solid var(--success);
+    }
+
+    @keyframes toastSlide {
+      from {
+        transform: translateX(20px);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    .empty-state {
+      padding: 2rem 0;
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav class="topbar">
+    <div class="brand">
+      ComplianceKit <span class="brand-tag">v2.0</span>
+    </div>
+    <div class="status-pill" id="auth-pill">UNAUTHORIZED</div>
+  </nav>
+
+  <main class="app-container">
+
+    <!-- LEFT RAIL: Auth & Config -->
+    <aside class="left-rail rail">
+      <section>
+        <div class="section-label">Access Terminal</div>
+        <form id="auth-form">
+          <div class="field">
+            <label>Operator ID</label>
+            <input type="text" name="username" placeholder="sysadmin" autocomplete="username">
+          </div>
+          <div class="field">
+            <label>Passcode</label>
+            <input type="password" name="password" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" autocomplete="current-password">
+          </div>
+          <button type="submit" class="btn" style="width: 100%" id="auth-btn">Authenticate</button>
+          <div id="auth-msg" class="auth-msg">Awaiting credentials.</div>
+        </form>
+      </section>
+
+      <section>
+        <div class="section-label">Active Policies</div>
+        <div id="policies-wrap">
+          <div class="empty-state">Authentication required to view system policies.</div>
+        </div>
+      </section>
+    </aside>
+
+    <!-- MAIN CHANNEL: Scan & Findings -->
+    <section class="main-channel">
+      <div>
+        <div class="section-label">Data Input stream</div>
+        <div class="field" style="margin-bottom:0">
+          <textarea id="scan-input"
+            spellcheck="false">Employee ID 8001015009087 and phone +27821234567. Contact hr@company.co.za for SARS tax 1234567890 support.</textarea>
+        </div>
+        <div style="display:flex; justify-content:flex-end; margin-top:1rem;">
+          <button id="scan-btn" class="btn btn--accent">Execute POPIA Scan</button>
+        </div>
+      </div>
+
+      <div id="findings-container">
+        <!-- Summary Strip injects here -->
+        <div class="section-label" id="scan-output-label" style="display:none; margin-top: 2rem;">Scan Output</div>
+        <div id="findings-wrap">
+          <div class="empty-state">Awaiting data input stream for analysis.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RIGHT RAIL: History & AI Remediation -->
+    <aside class="right-rail rail">
+      <section class="ai-panel">
+        <div class="ai-header">
+          <div class="section-label">AI Remediation</div>
+          <button id="ai-run-btn" class="btn btn--accent"
+            style="padding: 0.4rem 0.8rem; font-size:0.7rem;">Analyse</button>
+        </div>
+        <div id="ai-output">
+          <div class="empty-state" style="padding:0">Execute a scan and initiate analysis for contextual guidance.</div>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-label">Operator Logs</div>
+        <div id="history-wrap">
+          <div class="empty-state">Authentication required for history.</div>
+        </div>
+      </section>
+    </aside>
+
+  </main>
+
+  <div class="toast-zone" id="toasts"></div>
+
+  <script>
+    // ====== STATE & UTILS ======
+    const state = {
+      token: localStorage.getItem("compliancekit.token") || "",
+      lastFindings: []
+    };
+
+    const escapeHtml = (value) => String(value ?? "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#39;");
+
+    const normalizeSummary = (summary = {}) => {
+      const findingsByType = summary.findingsByType ?? summary.findings_by_type ?? {};
+      const totalFindings = Number(summary.totalFindings ?? summary.total_findings ?? 0) || 0;
+      const riskLevel = String(summary.riskLevel ?? summary.risk_level ?? "low");
+      const sensitiveCategories = Number(summary.sensitiveCategories ?? Object.keys(findingsByType || {}).length ?? 0) || 0;
+      const popiaExposureScore = Number(summary.popiaExposureScore ?? totalFindings) || 0;
+      return { totalFindings, riskLevel, sensitiveCategories, popiaExposureScore };
+    };
+
+    const ui = {
+      toast: (msg, type = "info") => {
+        const el = document.createElement("div");
+        el.className = `toast ${type}`;
+        el.textContent = msg;
+        document.getElementById("toasts").appendChild(el);
+        setTimeout(() => {
+          el.style.opacity = "0";
+          setTimeout(() => el.remove(), 300);
+        }, 4000);
+      },
+      setLoading: (btnId, isLoading) => {
+        const btn = document.getElementById(btnId);
+        if (!btn) return;
+        if (isLoading) {
+          btn.classList.add("loading");
+        } else {
+          btn.classList.remove("loading");
+        }
+      },
+      updateAuthStatus: (isAuthed, msg = "") => {
+        const pill = document.getElementById("auth-pill");
+        const authMsg = document.getElementById("auth-msg");
+        if (isAuthed) {
+          pill.textContent = "AUTHORIZED";
+          pill.className = "status-pill active";
+          authMsg.textContent = msg || "Connection secured.";
+          authMsg.className = "auth-msg ok";
+        } else {
+          pill.textContent = "UNAUTHORIZED";
+          pill.className = "status-pill";
+          authMsg.textContent = msg || "Awaiting credentials.";
+          authMsg.className = "auth-msg err";
+        }
+      }
+    };
+
+    const clearSession = (message) => {
+      state.token = "";
+      localStorage.removeItem("compliancekit.token");
+      ui.updateAuthStatus(false, message || "Session expired.");
+      document.getElementById("history-wrap").innerHTML = '<div class="empty-state">Authentication required for history.</div>';
+      document.getElementById("policies-wrap").innerHTML = '<div class="empty-state">Authentication required to view system policies.</div>';
+    };
+
+    // ====== RENDERING ======
+    const formatConfidence = (conf) => {
+      if (conf > 0.8) return { class: "badge-critical", label: "CRITICAL" };
+      if (conf > 0.5) return { class: "badge-high", label: "HIGH RISK" };
+      return { class: "badge-medium", label: "MODERATE" };
+    };
+
+    const renderFindings = (data) => {
+      state.lastFindings = data.findings || [];
+      const wrap = document.getElementById("findings-wrap");
+      document.getElementById("scan-output-label").style.display = "block";
+
+      const oldSummary = document.getElementById("scan-summary");
+      if (oldSummary) oldSummary.remove();
+
+      if (data.summary) {
+        const s = normalizeSummary(data.summary);
+        const summaryHtml = `
+          <div class="summary-grid" id="scan-summary">
+            <div class="summary-box">
+              <div class="summary-val accent">${escapeHtml(s.totalFindings)}</div>
+              <div class="summary-label">Violations</div>
+            </div>
+            <div class="summary-box">
+              <div class="summary-val" style="color:var(--text-main)">${escapeHtml(s.riskLevel)}</div>
+              <div class="summary-label">Risk Tier</div>
+            </div>
+            <div class="summary-box">
+              <div class="summary-val">${escapeHtml(s.sensitiveCategories)}</div>
+              <div class="summary-label">Categories</div>
+            </div>
+            <div class="summary-box">
+              <div class="summary-val">${escapeHtml(s.popiaExposureScore)}</div>
+              <div class="summary-label">Exposure Index</div>
+            </div>
+          </div>
+        `;
+        document.getElementById("scan-output-label").insertAdjacentHTML("beforebegin", summaryHtml);
+      }
+
+      if (!state.lastFindings.length) {
+        wrap.innerHTML = '<div class="empty-state" style="color:var(--success)">System clear. No structural violations detected.</div>';
+        return;
+      }
+
+      const html = state.lastFindings.map((f, i) => {
+        const conf = formatConfidence(Number(f.confidence || 0));
+        return `
+          <div class="finding-item" style="animation-delay: ${i * 0.05}s">
+            <div class="f-badge ${conf.class}">${escapeHtml(conf.label)}</div>
+            <div class="f-content">
+              <div class="f-value">${escapeHtml(f.value_masked)}</div>
+              <div class="f-meta">${escapeHtml(f.label)} - ${escapeHtml(Math.round((Number(f.confidence || 0)) * 100))}% Match Confidence</div>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      wrap.innerHTML = html;
+      document.getElementById("ai-output").innerHTML = '<div class="empty-state" style="padding:0">Execute a scan and initiate analysis for contextual guidance.</div>';
+    };
+
+    const loadV2Data = async () => {
+      if (!state.token) return;
+      try {
+        const [scansRes, polRes] = await Promise.all([
+          fetch("/api/v2/scans", { headers: { Authorization: `Bearer ${state.token}` } }).catch(() => ({ ok: false })),
+          fetch("/api/v2/policies", { headers: { Authorization: `Bearer ${state.token}` } }).catch(() => ({ ok: false }))
+        ]);
+
+        const unauthorized = [scansRes, polRes].some((res) => typeof res.status === "number" && res.status === 401);
+        if (unauthorized) {
+          clearSession("Session expired. Please authenticate again.");
+          return;
+        }
+
+        if (scansRes.ok) {
+          const scans = await scansRes.json();
+          if (scans.scans?.length) {
+            document.getElementById("history-wrap").innerHTML = `
+              <table class="data-matrix">
+                <thead><tr><th>ID</th><th>Risk</th><th>Time</th></tr></thead>
+                <tbody>
+                  ${scans.scans.slice(0, 5).map((s) => {
+                    const normalizedSummary = normalizeSummary(s.summary || {});
+                    const date = new Date(s.createdAt);
+                    const timeLabel = Number.isNaN(date.getTime()) ? "-" : date.toLocaleTimeString();
+                    return `
+                    <tr>
+                      <td style="opacity:0.6">${escapeHtml(String(s.id || "").slice(0, 8))}</td>
+                      <td>${escapeHtml(normalizedSummary.riskLevel)}</td>
+                      <td style="opacity:0.6">${escapeHtml(timeLabel)}</td>
+                    </tr>
+                  `;
+                  }).join("")}
+                </tbody>
+              </table>
+            `;
+          } else {
+            document.getElementById("history-wrap").innerHTML = '<div class="empty-state">No operator logs found.</div>';
+          }
+        }
+
+        if (polRes.ok) {
+          const policies = await polRes.json();
+          if (policies.policyProfiles?.length) {
+            document.getElementById("policies-wrap").innerHTML = `
+              <table class="data-matrix">
+                <thead><tr><th>Profile</th><th>Strictness</th></tr></thead>
+                <tbody>
+                  ${policies.policyProfiles.slice(0, 5).map((p) => `
+                    <tr>
+                      <td>${escapeHtml(p.name)}</td>
+                      <td style="opacity:0.6">${escapeHtml(p.strictness)}</td>
+                    </tr>
+                  `).join("")}
+                </tbody>
+              </table>
+            `;
+          } else {
+            document.getElementById("policies-wrap").innerHTML = '<div class="empty-state">No policies found.</div>';
+          }
+        }
+      } catch (err) {
+        console.error("V2 Load Error:", err);
+      }
+    };
+
+    const renderAiData = (data, target) => {
+      const { actionPlan = [], summary = {} } = data || {};
+      const sevClass = { critical: "sev-critical", high: "sev-high", medium: "sev-medium" };
+      let html = `
+        <div style="margin-bottom:1.5rem">
+          <div style="font-family:'JetBrains Mono';font-size:0.7rem;color:var(--text-muted);margin-bottom:0.5rem">RECOMMENDATION DIRECTIVE</div>
+          <div style="font-size:0.9rem;line-height:1.5">${escapeHtml(summary.recommendation || "No recommendation available.")}</div>
+        </div>
+      `;
+
+      html += actionPlan.map((a, i) => {
+        const severity = String(a.severity || "medium").toLowerCase();
+        const severityClass = sevClass[severity] || "";
+        const badgeClass = formatConfidence(severity === "critical" ? 0.9 : severity === "high" ? 0.6 : 0.2).class;
+        const conditions = Array.isArray(a.popiaConditions) ? a.popiaConditions.map((item) => escapeHtml(item)).join(" | ") : "";
+        const actions = Array.isArray(a.actions) ? a.actions.map((act) => `<li>${escapeHtml(act)}</li>`).join("") : "";
+        return `
+          <div class="ai-plan-action ${severityClass}" style="animation: revealSlide 0.4s ease backwards; animation-delay: ${i * 0.1}s">
+            <div class="ai-plan-head">
+              <span class="ai-plan-title">${escapeHtml(a.piiType)}</span>
+              <span class="f-badge ${badgeClass}">${escapeHtml(severity.toUpperCase())}</span>
+              <span class="ai-plan-time">SLA: ${escapeHtml(a.deadlineDays)}d</span>
+            </div>
+            <div class="ai-plan-conditions">${conditions}</div>
+            <ul class="ai-plan-list">${actions}</ul>
+          </div>
+        `;
+      }).join("");
+
+      target.innerHTML = html;
+      ui.toast("Analysis complete.", "ok");
+    };
+
+    // ====== EVENT HANDLERS ======
+    document.getElementById("auth-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      ui.setLoading("auth-btn", true);
+      const creds = Object.fromEntries(new FormData(e.target).entries());
+
+      try {
+        const res = await fetch("/api/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(creds)
+        });
+        const data = await res.json().catch(() => ({}));
+
+        if (res.ok) {
+          state.token = data.token;
+          localStorage.setItem("compliancekit.token", state.token);
+          ui.updateAuthStatus(true);
+          ui.toast("Authentication successful.", "ok");
+          loadV2Data();
+        } else {
+          ui.updateAuthStatus(false, data.error || "Access denied.");
+          ui.toast("Credentials rejected.", "err");
+        }
+      } catch (e) {
+        ui.updateAuthStatus(false, "Network failure.");
+        ui.toast("Network connectivity error.", "err");
+      } finally {
+        ui.setLoading("auth-btn", false);
+      }
+    });
+
+    document.getElementById("scan-btn").addEventListener("click", async () => {
+      const text = document.getElementById("scan-input").value;
+      if (!text.trim()) {
+        ui.toast("Input stream empty.", "err");
+        return;
+      }
+
+      ui.setLoading("scan-btn", true);
+      try {
+        const res = await fetch("/api/scan", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text })
+        });
+        const result = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          throw new Error(result.error || "Scan processor failed.");
+        }
+        renderFindings(result);
+        ui.toast(`Scan complete: ${result.findings?.length ?? 0} entity match(es)`, "ok");
+        if (state.token) loadV2Data();
+      } catch (e) {
+        ui.toast(String(e.message || "Scan processor failed."), "err");
+      } finally {
+        ui.setLoading("scan-btn", false);
+      }
+    });
+
+    document.getElementById("ai-run-btn").addEventListener("click", async () => {
+      if (!state.lastFindings.length) {
+        ui.toast("Execute scan before analysis.", "err");
+        return;
+      }
+
+      const out = document.getElementById("ai-output");
+      ui.setLoading("ai-run-btn", true);
+      out.innerHTML = '<div class="empty-state" style="padding:0">Processing remediation vectors...</div>';
+
+      try {
+        const res = await fetch("/api/ai/remediate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ findings: state.lastFindings })
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          throw new Error(data.error || "Analysis service unavailable.");
+        }
+        renderAiData(data, out);
+      } catch (err) {
+        out.innerHTML = `<div class="empty-state" style="padding:0">${escapeHtml(err.message || "Analysis failed. Please try again.")}</div>`;
+        ui.toast("Analysis failed.", "err");
+      } finally {
+        ui.setLoading("ai-run-btn", false);
+      }
+    });
+
+    // ====== INITIALIZATION ======
+    if (state.token) {
+      ui.updateAuthStatus(true, "Session restored.");
+      loadV2Data();
+    }
+  </script>
+
+</body>
+
+</html>

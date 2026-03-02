@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "compliancekit"
+version = "1.0.0"
+description = "POPIA-focused PII scanning core for South African data patterns."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.scripts]
+compliancekit = "compliancekit.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["compliancekit*"]
+
