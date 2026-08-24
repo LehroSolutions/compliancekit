@@ -31,25 +31,25 @@ ComplianceKit ships as three things:
 
 ## Key Features
 
-| Capability | Description |
-|---|---|
-| **SA ID Number Detection** | 13-digit South African ID numbers validated with Luhn checksum |
-| **Phone Number Detection** | Local (`0XX`) and international (`+27`) formats |
-| **Company Registration** | `YYYY/NNNNNN/NN` format matching |
-| **Email Detection** | Standard email pattern matching |
-| **Passport Numbers** | South African passport format (`A` + 8 digits) |
-| **Bank Account Numbers** | 8–11 digit numbers with context-aware detection (requires keywords: *bank*, *account*, *iban*, *branch*) |
-| **Tax Reference Numbers** | 10-digit numbers with context-aware detection (requires keywords: *tax*, *sars*, *tin*) |
-| **POPIA Condition Mapping** | Each finding is mapped to the relevant POPIA condition (Processing Limitation, Security Safeguards, etc.) |
-| **Risk Scoring** | Automatic risk classification: `high` (≥15 findings), `medium` (≥6), `low` (<6) |
-| **Remediation Recommendations** | Actionable steps per POPIA condition (encryption, consent, retention policies) |
-| **Value Masking** | All PII values are masked in output — raw PII is never persisted |
-| **Web Dashboard** | Scan text, view color-coded results, track scan history, manage remediations |
-| **Role-Based Auth** | Bearer token authentication with admin/operator/viewer roles and scope enforcement |
-| **Audit Trail** | Login, logout, and token refresh events are recorded |
-| **SQLite + JSON Fallback** | Persistent storage with automatic SQLite, falling back to JSON when unavailable |
-| **Docker Ready** | Single-command deployment with the included `Dockerfile` |
-| **Zero Dependencies** | Core library uses Python stdlib only — no external packages required |
+| Capability                      | Description                                                                                               |
+| ------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| **SA ID Number Detection**      | 13-digit South African ID numbers validated with Luhn checksum                                            |
+| **Phone Number Detection**      | Local (`0XX`) and international (`+27`) formats                                                           |
+| **Company Registration**        | `YYYY/NNNNNN/NN` format matching                                                                          |
+| **Email Detection**             | Standard email pattern matching                                                                           |
+| **Passport Numbers**            | South African passport format (`A` + 8 digits)                                                            |
+| **Bank Account Numbers**        | 8–11 digit numbers with context-aware detection (requires keywords: _bank_, _account_, _iban_, _branch_)  |
+| **Tax Reference Numbers**       | 10-digit numbers with context-aware detection (requires keywords: _tax_, _sars_, _tin_)                   |
+| **POPIA Condition Mapping**     | Each finding is mapped to the relevant POPIA condition (Processing Limitation, Security Safeguards, etc.) |
+| **Risk Scoring**                | Automatic risk classification: `high` (≥15 findings), `medium` (≥6), `low` (<6)                           |
+| **Remediation Recommendations** | Actionable steps per POPIA condition (encryption, consent, retention policies)                            |
+| **Value Masking**               | All PII values are masked in output — raw PII is never persisted                                          |
+| **Web Dashboard**               | Scan text, view color-coded results, track scan history, manage remediations                              |
+| **Role-Based Auth**             | Bearer token authentication with admin/operator/viewer roles and scope enforcement                        |
+| **Audit Trail**                 | Login, logout, and token refresh events are recorded                                                      |
+| **SQLite + JSON Fallback**      | Persistent storage with automatic SQLite, falling back to JSON when unavailable                           |
+| **Docker Ready**                | Single-command deployment with the included `Dockerfile`                                                  |
+| **Zero Dependencies**           | Core library uses Python stdlib only — no external packages required                                      |
 
 ---
 
@@ -140,43 +140,43 @@ compliancekit/
 
 ### Public Endpoints (No Auth)
 
-| Method | Path | Description |
-|--------|------|-------------|
-| `GET` | `/` | Serves the web dashboard |
-| `GET` | `/api/health` | Health check |
-| `GET` | `/api/ready` | Readiness check (reports storage backend) |
-| `POST` | `/api/scan` | Scan text for PII (body: `{ "text": "..." }`) |
+| Method | Path          | Description                                   |
+| ------ | ------------- | --------------------------------------------- |
+| `GET`  | `/`           | Serves the web dashboard                      |
+| `GET`  | `/api/health` | Health check                                  |
+| `GET`  | `/api/ready`  | Readiness check (reports storage backend)     |
+| `POST` | `/api/scan`   | Scan text for PII (body: `{ "text": "..." }`) |
 
 ### Authentication
 
-| Method | Path | Description |
-|--------|------|-------------|
-| `POST` | `/api/auth/login` | Login → access + refresh tokens (body: `{ "username", "password" }`) |
-| `POST` | `/api/auth/refresh` | Refresh access token (body: `{ "refreshToken" }`) |
-| `POST` | `/api/auth/logout` | Revoke tokens |
+| Method | Path                | Description                                                          |
+| ------ | ------------------- | -------------------------------------------------------------------- |
+| `POST` | `/api/auth/login`   | Login → access + refresh tokens (body: `{ "username", "password" }`) |
+| `POST` | `/api/auth/refresh` | Refresh access token (body: `{ "refreshToken" }`)                    |
+| `POST` | `/api/auth/logout`  | Revoke tokens                                                        |
 
 ### Authenticated Endpoints (Bearer Token)
 
-| Method | Path | Scope | Description |
-|--------|------|-------|-------------|
-| `GET` | `/api/v2/scans` | read | List all scans |
-| `POST` | `/api/v2/scans` | write | Create authenticated scan |
-| `GET` | `/api/v2/remediations` | read | List remediations |
-| `POST` | `/api/v2/remediations` | write | Create remediation item |
-| `PATCH` | `/api/v2/remediations/:id` | write | Update remediation status/owner |
-| `GET` | `/api/v2/policies` | read | List policy profiles |
-| `POST` | `/api/v2/policies` | write | Create policy profile |
-| `GET` | `/api/v2/report-jobs` | read | List report jobs |
-| `POST` | `/api/v2/report-jobs` | write | Queue a report job |
-| `POST` | `/api/ai/remediate` | — | Generate POPIA remediation action plan |
+| Method  | Path                       | Scope | Description                            |
+| ------- | -------------------------- | ----- | -------------------------------------- |
+| `GET`   | `/api/v2/scans`            | read  | List all scans                         |
+| `POST`  | `/api/v2/scans`            | write | Create authenticated scan              |
+| `GET`   | `/api/v2/remediations`     | read  | List remediations                      |
+| `POST`  | `/api/v2/remediations`     | write | Create remediation item                |
+| `PATCH` | `/api/v2/remediations/:id` | write | Update remediation status/owner        |
+| `GET`   | `/api/v2/policies`         | read  | List policy profiles                   |
+| `POST`  | `/api/v2/policies`         | write | Create policy profile                  |
+| `GET`   | `/api/v2/report-jobs`      | read  | List report jobs                       |
+| `POST`  | `/api/v2/report-jobs`      | write | Queue a report job                     |
+| `POST`  | `/api/ai/remediate`        | —     | Generate POPIA remediation action plan |
 
 ### Roles & Scopes
 
-| Role | Scopes |
-|------|--------|
-| `admin` | `read`, `write`, `admin` |
-| `operator` | `read`, `write` |
-| `viewer` | `read` |
+| Role       | Scopes                   |
+| ---------- | ------------------------ |
+| `admin`    | `read`, `write`, `admin` |
+| `operator` | `read`, `write`          |
+| `viewer`   | `read`                   |
 
 ---
 
@@ -184,18 +184,18 @@ compliancekit/
 
 All configuration is via environment variables. See [`.env.example`](.env.example) for a template.
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `APP_ENV` | `development` | Set to `production` to enforce secure defaults |
-| `APP_HOST` | `127.0.0.1` | Server bind address |
-| `APP_PORT` | `5101` | Server port |
-| `APP_USER` | `admin` | Default username |
-| `APP_PASS` | `change-me-before-production` | Default password (**blocked in production if unchanged**) |
-| `APP_ROLE` | `admin` | Default user role (`admin` / `operator` / `viewer`) |
-| `AUTH_SALT` | `change-me-before-production` | Password hashing salt (**blocked in production if unchanged**) |
-| `ACCESS_TTL_MIN` | `15` | Access token lifetime in minutes |
-| `REFRESH_TTL_DAYS` | `7` | Refresh token lifetime in days |
-| `MAX_BODY_BYTES` | `1048576` | Maximum request body size (1 MB) |
+| Variable           | Default                       | Description                                                    |
+| ------------------ | ----------------------------- | -------------------------------------------------------------- |
+| `APP_ENV`          | `development`                 | Set to `production` to enforce secure defaults                 |
+| `APP_HOST`         | `127.0.0.1`                   | Server bind address                                            |
+| `APP_PORT`         | `5101`                        | Server port                                                    |
+| `APP_USER`         | `admin`                       | Default username                                               |
+| `APP_PASS`         | `change-me-before-production` | Default password (**blocked in production if unchanged**)      |
+| `APP_ROLE`         | `admin`                       | Default user role (`admin` / `operator` / `viewer`)            |
+| `AUTH_SALT`        | `change-me-before-production` | Password hashing salt (**blocked in production if unchanged**) |
+| `ACCESS_TTL_MIN`   | `15`                          | Access token lifetime in minutes                               |
+| `REFRESH_TTL_DAYS` | `7`                           | Refresh token lifetime in days                                 |
+| `MAX_BODY_BYTES`   | `1048576`                     | Maximum request body size (1 MB)                               |
 
 > **Production hardening:** When `APP_ENV=production`, the server will refuse to start if `APP_PASS` or `AUTH_SALT` still have their insecure defaults.
 
@@ -237,6 +237,7 @@ See [`CHANGELOG.md`](CHANGELOG.md) for the full release history.
 ComplianceKit is an open-source project by **Lehro Solutions**. Contributions are welcome — please open an issue or submit a pull request.
 
 Before submitting changes, please:
+
 1. Run the full test suite (`python -m unittest discover -s tests -p "test_*.py" -v`).
 2. Review the [`RELEASE_CHECKLIST.md`](RELEASE_CHECKLIST.md) for quality gates.
 3. Follow existing code conventions (stdlib only, no external dependencies in core).
@@ -245,4 +246,47 @@ Before submitting changes, please:
 
 ## License
 
-Copyright © 2026 Lehro Solutions. Licensed under the [Apache License 2.0](LICENSE).
+Copyright © 2026 Lehro Solutions. Licensed under the [Apache License 2.0](LICENSE). See [NOTICE](NOTICE).
+
+## Documentation
+
+Canonical docs hub: [`docs/.docs/index.md`](docs/.docs/index.md)
+
+## Package manager
+
+ComplianceKit is Python-native. **Bun is not used here.** Prefer `python -m venv .venv` and install via `pyproject.toml`.
+
+See `docs/.docs/adr-0003-package-manager-bun.md`.
+
+<!-- docs-system:start -->
+
+## Documentation
+
+The current public documentation is available in [`docs/index.html`](docs/index.html). Start with [`docs/current/start-here.md`](docs/current/start-here.md) for scope, current changes, workflows, architecture, security, quality, and contribution guidance.
+
+### Latest public changes
+
+- Bulk local file processing
+- Custom rules editor
+- Remediation queue and analytics
+- Policy profiles and report jobs
+
+Documentation is maintained as canonical Markdown plus generated HTML and JSON counterparts. Run `pnpm docs:build` after changing `docs/current/*.md` and `pnpm docs:check` before a public release.
+<!-- docs-system:end -->
+
+<!-- bun-toolchain:start -->
+
+## Bun and CI
+
+This repository uses **Bun 1.3.14** and targets **Node 24+** for JavaScript tooling and CI.
+
+```bash
+rm -f package-lock.json
+bun install
+bun run build
+bun run test
+bun run docs:check
+```
+
+Do not use `npm ci`; Bun is the canonical install path. Run `bun install` after dependency changes and commit the resulting `bun.lock`.
+<!-- bun-toolchain:end -->

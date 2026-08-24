@@ -1,0 +1,14 @@
+{
+  "product": "ComplianceKit",
+  "title": "Architecture",
+  "group": "Guides",
+  "path": ".docs/architecture.md",
+  "lead": "POPIA-focused PII scanning core and operator console for South African data patterns.",
+  "content_markdown": "# ComplianceKit Architecture\n\n  ## Intent\n  POPIA-focused PII scanning core and operator console for South African data patterns.\n\n  ## Runtime shape\n  - Domain: **Privacy / POPIA compliance**\n  - Primary stack: Python 3.11+, stdlib HTTP server, SQLite optional state, vanilla webapp\n  - Key entrypoints:\n- `compliancekit/pii.py`\n- `compliancekit/popia.py`\n- `webapp/server.py`\n- `webapp/index.html`\n\n  ## Boundaries\n  - Validate inputs at trust boundaries.\n  - Keep authorization explicit near data access.\n  - Prefer recoverable errors over silent failure.\n  - Keep side effects isolated and observable.\n\n  ## Related\n  - [Design System](./design-system.md)\n  - [Security](./security.md)\n  - [ADR-0001](./adr-0001-docs-system.md)\n  - [Roadmap](./roadmap.md)\n",
+  "layout": "quantumide-ultra-link",
+  "theme": {
+    "mode": "dark",
+    "accent": "#e2ff33",
+    "css": "design-system.css"
+  }
+}

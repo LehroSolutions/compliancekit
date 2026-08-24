@@ -1,0 +1,68 @@
+{
+  "schemaVersion": "1.0",
+  "slug": "patterns",
+  "title": "Patterns",
+  "status": "current",
+  "audience": [
+    "Compliance operators",
+    "Security reviewers",
+    "Contributors"
+  ],
+  "useWhen": "Use the corresponding current guide for this task.",
+  "sourceOfTruth": "current/patterns.md",
+  "counterparts": {
+    "markdown": "current/patterns.md",
+    "html": "current/patterns.html",
+    "json": "current/patterns.json"
+  },
+  "summary": "Current patterns guidance for ComplianceKit.",
+  "sections": [
+    {
+      "id": "purpose",
+      "label": "Purpose"
+    },
+    {
+      "id": "on-this-page",
+      "label": "On this page"
+    },
+    {
+      "id": "guidance",
+      "label": "Guidance"
+    },
+    {
+      "id": "verification",
+      "label": "Verification"
+    },
+    {
+      "id": "related-guides",
+      "label": "Related guides"
+    },
+    {
+      "id": "primary-workflows",
+      "label": "Primary workflows"
+    },
+    {
+      "id": "recovery-behavior",
+      "label": "Recovery behavior"
+    }
+  ],
+  "relatedGuides": [
+    "start-here",
+    "architecture",
+    "quality",
+    "contributing"
+  ],
+  "keywords": [
+    "compliancekit",
+    "patterns",
+    "documentation",
+    "current"
+  ],
+  "lastReviewed": "2026-07-13",
+  "sourceChecksum": "3970ff9b4c8c2319c126d8fbb902fb3bb5e51e344733583f828222da013ab964",
+  "generatedAt": "2026-07-13T11:47:55.580177+00:00",
+  "release": "archive-2026-07-13",
+  "validation": {
+    "state": "generated"
+  }
+}

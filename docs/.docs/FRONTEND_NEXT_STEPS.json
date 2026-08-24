@@ -1,0 +1,14 @@
+{
+  "product": "ComplianceKit",
+  "title": "Frontend Next Steps",
+  "group": "Project",
+  "path": ".docs/FRONTEND_NEXT_STEPS.md",
+  "lead": "ComplianceKit features a cyan/navy \"POPIA Radar\" dashboard for interactive auditing.",
+  "content_markdown": "# ComplianceKit Frontend Roadmap\n\nComplianceKit features a cyan/navy \"POPIA Radar\" dashboard for interactive auditing.\n\n## Current Capabilities\n- [x] **PII Detector**: Free-form text input with instant scanning.\n- [x] **Risk Results**: Table view of detected PII (masked) with confidence scores.\n- [x] **Compliance Summary**: POPIA condition breakdown and risk level.\n- [x] **Scan History**: Persistent storage/retrieval with filtering.\n- [x] **Remediation Queue**: Create and list remediation tasks.\n- [x] **Auth Management**: Login, logout, throttling, session-only tokens.\n- [x] **Bulk Processing**: Multi-file local scans.\n- [x] **Export Engine**: CSV export of masked findings.\n- [x] **Interactive Analytics**: Findings-by-type bars and risk mix.\n- [x] **Custom Rules Editor**: Operator-defined safe regex labels.\n\n## Implementation Standards\n- Maintain the cyan-on-black industrial aesthetic.\n- High contrast + keyboard focus for interactive panels.\n- Never render raw PII values in the DOM.\n",
+  "layout": "quantumide-ultra-link",
+  "theme": {
+    "mode": "dark",
+    "accent": "#e2ff33",
+    "css": "design-system.css"
+  }
+}

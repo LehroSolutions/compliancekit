@@ -1,0 +1,72 @@
+{
+  "schemaVersion": "1.0",
+  "slug": "foundations",
+  "title": "Foundations",
+  "status": "current",
+  "audience": [
+    "Compliance operators",
+    "Security reviewers",
+    "Contributors"
+  ],
+  "useWhen": "Use the corresponding current guide for this task.",
+  "sourceOfTruth": "current/foundations.md",
+  "counterparts": {
+    "markdown": "current/foundations.md",
+    "html": "current/foundations.html",
+    "json": "current/foundations.json"
+  },
+  "summary": "Current foundations guidance for ComplianceKit.",
+  "sections": [
+    {
+      "id": "purpose",
+      "label": "Purpose"
+    },
+    {
+      "id": "on-this-page",
+      "label": "On this page"
+    },
+    {
+      "id": "guidance",
+      "label": "Guidance"
+    },
+    {
+      "id": "verification",
+      "label": "Verification"
+    },
+    {
+      "id": "related-guides",
+      "label": "Related guides"
+    },
+    {
+      "id": "non-negotiable-rules",
+      "label": "Non-negotiable rules"
+    },
+    {
+      "id": "accessibility-baseline",
+      "label": "Accessibility baseline"
+    },
+    {
+      "id": "content-rules",
+      "label": "Content rules"
+    }
+  ],
+  "relatedGuides": [
+    "start-here",
+    "architecture",
+    "quality",
+    "contributing"
+  ],
+  "keywords": [
+    "compliancekit",
+    "foundations",
+    "documentation",
+    "current"
+  ],
+  "lastReviewed": "2026-07-13",
+  "sourceChecksum": "1cb2acf27a4fd57643884da6aca4d45b7e4639203d0fe93b7431cf17fa2e7355",
+  "generatedAt": "2026-07-13T11:47:55.579685+00:00",
+  "release": "archive-2026-07-13",
+  "validation": {
+    "state": "generated"
+  }
+}

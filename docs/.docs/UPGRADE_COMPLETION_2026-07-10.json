@@ -1,0 +1,14 @@
+{
+  "product": "ComplianceKit",
+  "title": "Upgrade Completion 2026 07 10",
+  "group": "Project",
+  "path": ".docs/UPGRADE_COMPLETION_2026-07-10.md",
+  "lead": "Run compile/smoke tests and browser QA after restoring dependencies.",
+  "content_markdown": "# 2026 Upgrade Completion\n\n## Outcome\n\n- PBKDF2 password migration + login throttling + CSP.\n- Session-only browser tokens.\n- Bulk scans, CSV export, history filtering.\n- Custom rules API/UI with safe-regex guardrails.\n- Analytics endpoint + dashboard bars.\n- Remediation queue create/list UI.\n\n## Security review\n\n- Custom regex rejects nested groups / possessive risks and bounds input length.\n- No secrets added to the repository.\n\n## Verification gates\n\nRun compile/smoke tests and browser QA after restoring dependencies.\n",
+  "layout": "quantumide-ultra-link",
+  "theme": {
+    "mode": "dark",
+    "accent": "#e2ff33",
+    "css": "design-system.css"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "product": "ComplianceKit",
+  "title": "Audit Improvements 2026 07 10",
+  "group": "Project",
+  "path": ".docs/AUDIT_IMPROVEMENTS_2026-07-10.md",
+  "lead": "Product: ComplianceKit",
+  "content_markdown": "        # Audit & Improvements \u2014 2026-07-10\n\n        Product: **ComplianceKit**\n\n        ## Audit findings addressed\n        - Operators may run bun install expecting JS package; product is Python-native\n\n        ## Improvements applied\n        - Added INSTALL.md with Python venv/pip path\n- Added private tooling package.json stub so bun install no longer hard-fails; postinstall explains Python path\n\n        ## Install verification\n        - JS/TS packages: run `bun install` from the directory containing `package.json` (repo root for workspace packages).\n        - Python packages: use venv + pip (`INSTALL.md`).\n\n        ## Related\n        - [How to Use](./how-to-use.md)\n        - [Security](./security.md)\n        - [ADR-0003 Package Manager](./adr-0003-package-manager-bun.md)\n",
+  "layout": "quantumide-ultra-link",
+  "theme": {
+    "mode": "dark",
+    "accent": "#e2ff33",
+    "css": "design-system.css"
+  }
+}

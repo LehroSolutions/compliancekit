@@ -1,0 +1,14 @@
+{
+  "product": "ComplianceKit",
+  "title": "Production",
+  "group": "Project",
+  "path": ".docs/PRODUCTION.md",
+  "lead": "ComplianceKit is designed as a local-first or self-hosted compliance tool. It can be deployed as:",
+  "content_markdown": "# ComplianceKit - Production Guide\n\n## Deployment Model\nComplianceKit is designed as a local-first or self-hosted compliance tool. It can be deployed as:\n- **CLI Tool**: For ad-hoc scanning in local environments or build pipelines.\n- **Self-Hosted Service**: Using the included `webapp/server.py` or the provided `Dockerfile`.\n\n## Configuration (Environment Variables)\nProduction behavior is controlled via environment variables.\n\n| Variable | Default | Description |\n|----------|---------|-------------|\n| `APP_ENV` | `development` | Setting to `production` enables security enforcement. |\n| `APP_USER` | `admin` | Default admin username. |\n| `APP_PASS` | `admin123` | Default password (**Must be changed for production**). |\n| `AUTH_SALT` | `compliancekit-salt` | Password hashing salt (**Must be changed for production**). |\n| `MAX_BODY_BYTES` | `1048576` | (1MB) Maximum request payload size to prevent DOS. |\n| `ACCESS_TTL_MIN` | `15` | Access token expiration time. |\n| `REFRESH_TTL_DAYS` | `7` | Refresh token expiration time. |\n\n## Runtime Backend\n- **SQLite**: The server attempts to use `webapp/data.sqlite` for persistence.\n- **JSON Fallback**: If SQLite is unavailable, it falls back to `webapp/data.json`.\n- **Monitoring**: Use the `/api/ready` endpoint to check the active storage backend.\n\n## Production Hardening\nWhen `APP_ENV=production`:\n1. The server **fails to start** if `APP_PASS` or `AUTH_SALT` remain at their default values.\n2. All API responses include strict security headers (`X-Frame-Options`, `X-Content-Type-Options`, etc.).\n3. Request size limits are strictly enforced.\n\n## Docker Deployment\n```bash\ndocker build -t compliancekit .\ndocker run -p 5101:5101 \\\n  -e APP_ENV=production \\\n  -e APP_PASS=\"YOUR_SECURE_PASSWORD\" \\\n  -e AUTH_SALT=\"YOUR_SECURE_SALT\" \\\n  compliancekit\n```\n\n## Maintenance\n- **Data Retention**: Periodically clear `webapp/data.sqlite` or rotate the file if needed.\n- **Rule Updates**: Monitor `compliancekit/pii.py` for pattern updates to SA legal requirements.\n",
+  "layout": "quantumide-ultra-link",
+  "theme": {
+    "mode": "dark",
+    "accent": "#e2ff33",
+    "css": "design-system.css"
+  }
+}

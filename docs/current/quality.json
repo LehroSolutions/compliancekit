@@ -1,0 +1,70 @@
+{
+  "schemaVersion": "1.0",
+  "slug": "quality",
+  "title": "Quality",
+  "status": "current",
+  "audience": [
+    "Contributors",
+    "Maintainers"
+  ],
+  "useWhen": "Use the corresponding current guide for this task.",
+  "sourceOfTruth": "current/quality.md",
+  "counterparts": {
+    "markdown": "current/quality.md",
+    "html": "current/quality.html",
+    "json": "current/quality.json"
+  },
+  "summary": "Current quality guidance for ComplianceKit.",
+  "sections": [
+    {
+      "id": "purpose",
+      "label": "Purpose"
+    },
+    {
+      "id": "on-this-page",
+      "label": "On this page"
+    },
+    {
+      "id": "guidance",
+      "label": "Guidance"
+    },
+    {
+      "id": "verification",
+      "label": "Verification"
+    },
+    {
+      "id": "related-guides",
+      "label": "Related guides"
+    },
+    {
+      "id": "required-gates",
+      "label": "Required gates"
+    },
+    {
+      "id": "documentation-gate",
+      "label": "Documentation gate"
+    },
+    {
+      "id": "definition-of-done",
+      "label": "Definition of done"
+    }
+  ],
+  "relatedGuides": [
+    "start-here",
+    "architecture",
+    "contributing"
+  ],
+  "keywords": [
+    "compliancekit",
+    "quality",
+    "documentation",
+    "current"
+  ],
+  "lastReviewed": "2026-07-13",
+  "sourceChecksum": "0d1f09011e6b840363e284f6469b019c3404ea340354b6c7572decbb8d8309cf",
+  "generatedAt": "2026-07-13T11:47:55.581231+00:00",
+  "release": "archive-2026-07-13",
+  "validation": {
+    "state": "generated"
+  }
+}

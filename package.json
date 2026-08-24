@@ -1,0 +1,19 @@
+{
+  "name": "compliancekit-tooling",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Tooling stub only \u2014 ComplianceKit runtime is Python (see INSTALL.md). No JS runtime dependencies.",
+  "license": "Apache-2.0",
+  "author": "Lehro Solutions",
+  "packageManager": "bun@1.3.14",
+  "engines": {
+    "bun": ">=1.3.14"
+  },
+  "scripts": {
+    "package:manager": "bun --version",
+    "postinstall": "bun -e \"console.log('ComplianceKit is Python-native. Use pip/venv \u2014 see INSTALL.md')\"",
+    "python:hint": "bun -e \"console.log('Use: python -m venv .venv && pip install -e .')\"",
+    "docs:build": "node scripts/docs.mjs build",
+    "docs:check": "node scripts/docs.mjs check"
+  }
+}

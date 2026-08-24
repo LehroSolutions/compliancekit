@@ -10,3 +10,13 @@ webapp/data.sqlite
 
 .env
 advertising video/
+node_modules/
+.env.*
+!.env.example
+coverage/
+dist/
+.DS_Store
+*.log
+
+# Bun is the canonical package manager and lockfile authority
+package-lock.json

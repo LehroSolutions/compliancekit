@@ -1,0 +1,14 @@
+{
+  "product": "ComplianceKit",
+  "title": "Roadmap",
+  "group": "Guides",
+  "path": ".docs/roadmap.md",
+  "lead": "Status snapshot as of 2026-07-10.",
+  "content_markdown": "# ComplianceKit Roadmap\n\nStatus snapshot as of 2026-07-10.\n\n- [x] Interactive analytics\n- [x] Custom rules editor\n- [x] Remediation queue\n- [x] Bulk local file processing\n\n## Documentation loop\n- Keep roadmap checkboxes honest after each delivery\n- Link security findings into [Security](./security.md)\n- Record architectural shifts as ADRs\n\n## Related\n- [Index](./index.md)\n- [ADR-0001](./adr-0001-docs-system.md)\n- [Skills](./skills.md)\n",
+  "layout": "quantumide-ultra-link",
+  "theme": {
+    "mode": "dark",
+    "accent": "#e2ff33",
+    "css": "design-system.css"
+  }
+}

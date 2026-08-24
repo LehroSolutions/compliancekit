@@ -3,6 +3,8 @@ requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
+authors = [{ name = "Lehro Solutions" }]
+license = { text = "Apache-2.0" }
 name = "compliancekit"
 version = "1.0.0"
 description = "POPIA-focused PII scanning core for South African data patterns."

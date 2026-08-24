@@ -1,0 +1,14 @@
+{
+  "product": "ComplianceKit",
+  "title": "Design System",
+  "group": "Guides",
+  "path": ".docs/design-system.md",
+  "lead": "Cyan/navy industrial POPIA radar",
+  "content_markdown": "# ComplianceKit Design System\n\n## Tone\nCyan/navy industrial POPIA radar\n\n## Mode\n`dark`\n\n## Core tokens\n- Background: `#09090b`\n- Panel: `#121214`\n- Text: `#f4f4f5`\n- Muted: `#a1a1aa`\n- Line: `#27272a`\n- Accent: `#e2ff33`\n- Accent 2: `#d1eb20`\n- Success / Warning / Danger: `#00e676` / `#ffb800` / `#ff4545`\n- Radius: `10px`\n- Font: `Arial, Helvetica, sans-serif`\n- Mono: `Consolas, monospace`\n\n## Docs integration\n- Shared CSS: [design-system.css](./design-system.css)\n- Machine tokens: [design-system.tokens.json](./design-system.tokens.json)\n- All ultra-linked HTML pages are rendered with this theme (not a generic shared skin).\n\n## Operator UX standards\n- Semantic HTML and visible focus states\n- High-contrast product palette (no generic purple-gradient AI slop)\n- Prefer product density and operational clarity\n- Respect `prefers-reduced-motion`\n\n## Related\n- [Architecture](./architecture.md)\n- [How to Use](./how-to-use.md)\n- [Skills](./skills.md)\n- [Index](./index.md)\n",
+  "layout": "quantumide-ultra-link",
+  "theme": {
+    "mode": "dark",
+    "accent": "#e2ff33",
+    "css": "design-system.css"
+  }
+}

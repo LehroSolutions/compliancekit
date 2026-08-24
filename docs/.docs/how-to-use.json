@@ -1,0 +1,14 @@
+{
+  "product": "ComplianceKit",
+  "title": "How To Use",
+  "group": "Guides",
+  "path": ".docs/how-to-use.md",
+  "lead": "ComplianceKit detects South African PII patterns and maps findings to POPIA conditions.",
+  "content_markdown": "# How to Use ComplianceKit\n\nComplianceKit detects South African PII patterns and maps findings to POPIA conditions.\n\n## 1) Install\n\n```bash\npython -m venv .venv\nsource .venv/bin/activate\npip install -e .\n```\n\n## 2) CLI scan\n\n```bash\ncompliancekit --file document.txt\necho \"ID 9001015009087\" | compliancekit --json\n```\n\n## 3) Web dashboard\n\n```bash\npython webapp/server.py\n```\n\nThen open the local URL printed by the server.\n\n### Operator flow\n1. Authenticate with configured credentials (see `.env.example`)\n2. Paste text or bulk-upload local files\n3. Review masked findings and risk summary\n4. Export CSV / queue remediations / manage custom rules\n\n## 4) Production notes\n- Set strong `APP_PASS` and `AUTH_SALT`\n- Prefer reverse-proxy TLS\n- Keep scan data local\n\n## Related\n- [INSTALL.md](../../INSTALL.md)\n- [Security](./security.md)\n- [Architecture](./architecture.md)\n",
+  "layout": "quantumide-ultra-link",
+  "theme": {
+    "mode": "dark",
+    "accent": "#e2ff33",
+    "css": "design-system.css"
+  }
+}

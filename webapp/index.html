@@ -1,16 +1,11 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en">
 
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ComplianceKit â€” POPIA Radar 2.0</title>
+  <title>ComplianceKit — POPIA Radar 2.0</title>
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400..700&family=JetBrains+Mono:wght@400;700&family=Syne:wght@400..800&display=swap"
-    rel="stylesheet">
 
   <style>
     :root {
@@ -41,7 +36,7 @@
     body {
       background-color: var(--bg);
       color: var(--text-main);
-      font-family: 'DM Sans', sans-serif;
+      font-family: Arial, Helvetica, sans-serif;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
@@ -53,14 +48,14 @@
     h2,
     h3,
     .brand {
-      font-family: 'Syne', sans-serif;
+      font-family: Arial, Helvetica, sans-serif;
       font-weight: 700;
       letter-spacing: -0.02em;
       text-transform: uppercase;
     }
 
     .mono {
-      font-family: 'JetBrains Mono', monospace;
+      font-family: Consolas, monospace;
     }
 
     /* LAYOUT */
@@ -111,7 +106,7 @@
     }
 
     .brand-tag {
-      font-family: 'JetBrains Mono', monospace;
+      font-family: Consolas, monospace;
       font-size: 0.65rem;
       background: var(--text-main);
       color: var(--bg);
@@ -121,7 +116,7 @@
     }
 
     .status-pill {
-      font-family: 'JetBrains Mono', monospace;
+      font-family: Consolas, monospace;
       font-size: 0.7rem;
       padding: 0.4rem 1rem;
       border: 1px solid var(--border);
@@ -179,7 +174,7 @@
 
     /* TYPOGRAPHY COMPONENTS */
     .section-label {
-      font-family: 'JetBrains Mono', monospace;
+      font-family: Consolas, monospace;
       font-size: 0.65rem;
       text-transform: uppercase;
       color: var(--text-muted);
@@ -198,7 +193,7 @@
     }
 
     .field label {
-      font-family: 'JetBrains Mono', monospace;
+      font-family: Consolas, monospace;
       font-size: 0.7rem;
       color: var(--text-muted);
     }
@@ -209,7 +204,7 @@
       border: 1px solid var(--border);
       padding: 0.8rem 1rem;
       color: var(--text-main);
-      font-family: 'DM Sans', sans-serif;
+      font-family: Arial, Helvetica, sans-serif;
       font-size: 0.9rem;
       transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
       border-radius: 2px;
@@ -235,7 +230,7 @@
       align-items: center;
       justify-content: center;
       padding: 0.9rem 1.5rem;
-      font-family: 'Syne', sans-serif;
+      font-family: Arial, Helvetica, sans-serif;
       font-weight: 700;
       font-size: 0.85rem;
       text-transform: uppercase;
@@ -330,7 +325,7 @@
     .auth-msg {
       font-size: 0.8rem;
       margin-top: 1rem;
-      font-family: 'JetBrains Mono', monospace;
+      font-family: Consolas, monospace;
     }
 
     .auth-msg.err {
@@ -361,7 +356,7 @@
     }
 
     .summary-val {
-      font-family: 'Syne', sans-serif;
+      font-family: Arial, Helvetica, sans-serif;
       font-size: 2.5rem;
       font-weight: 700;
       line-height: 1;
@@ -373,7 +368,7 @@
     }
 
     .summary-label {
-      font-family: 'JetBrains Mono', monospace;
+      font-family: Consolas, monospace;
       font-size: 0.65rem;
       color: var(--text-muted);
       text-transform: uppercase;
@@ -398,7 +393,7 @@
     }
 
     .f-badge {
-      font-family: 'JetBrains Mono', monospace;
+      font-family: Consolas, monospace;
       font-size: 0.65rem;
       padding: 0.2rem 0.6rem;
       border-radius: 999px;
@@ -431,7 +426,7 @@
     }
 
     .f-value {
-      font-family: 'JetBrains Mono', monospace;
+      font-family: Consolas, monospace;
       font-size: 0.95rem;
       margin-bottom: 0.4rem;
       color: var(--text-main);
@@ -458,7 +453,7 @@
     .data-matrix {
       width: 100%;
       border-collapse: collapse;
-      font-family: 'JetBrains Mono', monospace;
+      font-family: Consolas, monospace;
       font-size: 0.75rem;
     }
 
@@ -542,14 +537,14 @@
     }
 
     .ai-plan-title {
-      font-family: 'Syne', sans-serif;
+      font-family: Arial, Helvetica, sans-serif;
       font-weight: 700;
       font-size: 1rem;
     }
 
     .ai-plan-time {
       margin-left: auto;
-      font-family: 'JetBrains Mono', monospace;
+      font-family: Consolas, monospace;
       font-size: 0.7rem;
       color: var(--text-muted);
     }
@@ -597,7 +592,7 @@
       border: 1px solid var(--border);
       padding: 1rem 1.25rem;
       color: var(--text-main);
-      font-family: 'JetBrains Mono', monospace;
+      font-family: Consolas, monospace;
       font-size: 0.75rem;
       box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
       animation: toastSlide 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
@@ -626,7 +621,7 @@
     .empty-state {
       padding: 2rem 0;
       color: var(--text-muted);
-      font-family: 'JetBrains Mono', monospace;
+      font-family: Consolas, monospace;
       font-size: 0.8rem;
     }
   </style>
@@ -654,7 +649,7 @@
           </div>
           <div class="field">
             <label>Passcode</label>
-            <input type="password" name="password" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" autocomplete="current-password">
+            <input type="password" name="password" placeholder="••••••••" autocomplete="current-password">
           </div>
           <button type="submit" class="btn" style="width: 100%" id="auth-btn">Authenticate</button>
           <div id="auth-msg" class="auth-msg">Awaiting credentials.</div>
@@ -665,6 +660,26 @@
         <div class="section-label">Active Policies</div>
         <div id="policies-wrap">
           <div class="empty-state">Authentication required to view system policies.</div>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-label">Custom Rules</div>
+        <form id="rule-form" class="field" style="gap:.5rem;display:grid">
+          <input name="name" placeholder="Rule name" aria-label="Rule name" required>
+          <input name="label" placeholder="Finding label" aria-label="Finding label" required>
+          <input name="pattern" placeholder="Safe regex e.g. INV-\d{4}" aria-label="Regex pattern" required>
+          <button class="btn" type="submit" id="rule-btn">Add rule</button>
+        </form>
+        <div id="rules-wrap" style="margin-top:.75rem">
+          <div class="empty-state">Authentication required.</div>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-label">Analytics</div>
+        <div id="analytics-wrap">
+          <div class="empty-state">Authentication required.</div>
         </div>
       </section>
     </aside>
@@ -678,6 +693,8 @@
             spellcheck="false">Employee ID 8001015009087 and phone +27821234567. Contact hr@company.co.za for SARS tax 1234567890 support.</textarea>
         </div>
         <div style="display:flex; justify-content:flex-end; margin-top:1rem;">
+          <label class="btn" style="margin-right:.75rem;cursor:pointer">Bulk files<input id="bulk-files" type="file" multiple accept=".txt,.csv,.json" hidden></label>
+          <button id="export-btn" class="btn" type="button" style="margin-right:.75rem">Export CSV</button>
           <button id="scan-btn" class="btn btn--accent">Execute POPIA Scan</button>
         </div>
       </div>
@@ -706,8 +723,27 @@
 
       <section>
         <div class="section-label">Operator Logs</div>
+        <input id="history-filter" type="search" placeholder="Filter by ID or risk" aria-label="Filter scan history" style="margin-bottom:.75rem">
         <div id="history-wrap">
           <div class="empty-state">Authentication required for history.</div>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-label">Remediation Queue</div>
+        <form id="remediation-form" style="display:grid;gap:.5rem;margin-bottom:.75rem">
+          <input name="title" placeholder="Remediation title" aria-label="Title" required>
+          <input name="condition" placeholder="POPIA condition" aria-label="Condition" required>
+          <input name="owner" placeholder="Owner" aria-label="Owner" required>
+          <select name="priority" aria-label="Priority">
+            <option value="high">High</option>
+            <option value="medium" selected>Medium</option>
+            <option value="low">Low</option>
+          </select>
+          <button class="btn" type="submit" id="remediation-btn">Queue item</button>
+        </form>
+        <div id="remediation-wrap">
+          <div class="empty-state">Authentication required.</div>
         </div>
       </section>
     </aside>
@@ -719,7 +755,7 @@
   <script>
     // ====== STATE & UTILS ======
     const state = {
-      token: localStorage.getItem("compliancekit.token") || "",
+      token: sessionStorage.getItem("compliancekit.token") || "",
       lastFindings: []
     };
 
@@ -778,7 +814,7 @@
 
     const clearSession = (message) => {
       state.token = "";
-      localStorage.removeItem("compliancekit.token");
+      sessionStorage.removeItem("compliancekit.token");
       ui.updateAuthStatus(false, message || "Session expired.");
       document.getElementById("history-wrap").innerHTML = '<div class="empty-state">Authentication required for history.</div>';
       document.getElementById("policies-wrap").innerHTML = '<div class="empty-state">Authentication required to view system policies.</div>';
@@ -846,7 +882,7 @@
       document.getElementById("ai-output").innerHTML = '<div class="empty-state" style="padding:0">Execute a scan and initiate analysis for contextual guidance.</div>';
     };
 
-    const loadV2Data = async () => {
+    let loadV2Data = async () => {
       if (!state.token) return;
       try {
         const [scansRes, polRes] = await Promise.all([
@@ -961,7 +997,7 @@
 
         if (res.ok) {
           state.token = data.token;
-          localStorage.setItem("compliancekit.token", state.token);
+          sessionStorage.setItem("compliancekit.token", state.token);
           ui.updateAuthStatus(true);
           ui.toast("Authentication successful.", "ok");
           loadV2Data();
@@ -1033,6 +1069,122 @@
         ui.setLoading("ai-run-btn", false);
       }
     });
+
+
+    document.getElementById("bulk-files").addEventListener("change", async (event) => {
+      const files = [...event.target.files].slice(0, 20);
+      for (const file of files) {
+        if (file.size > 512000) { ui.toast(`${file.name} exceeds 500 KB.`, "err"); continue; }
+        const res = await fetch("/api/scan", {method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({text:await file.text()})});
+        if (res.ok) renderFindings(await res.json());
+      }
+      if (state.token) loadV2Data(); event.target.value = "";
+    });
+    document.getElementById("export-btn").addEventListener("click", () => {
+      const rows=[["type","masked_value","confidence"],...state.lastFindings.map(f=>[f.label,f.value_masked,f.confidence])];
+      const csv=rows.map(r=>r.map(v=>`"${String(v??"").replaceAll('"','""')}"`).join(",")).join("\n");
+      const url=URL.createObjectURL(new Blob([csv],{type:"text/csv"})); const a=Object.assign(document.createElement("a"),{href:url,download:`compliancekit-${Date.now()}.csv`}); a.click(); URL.revokeObjectURL(url);
+    });
+    document.getElementById("history-filter").addEventListener("input",e=>document.querySelectorAll("#history-wrap tbody tr").forEach(row=>row.hidden=!row.textContent.toLowerCase().includes(e.target.value.toLowerCase())));
+
+
+
+const renderAnalytics = (data = {}) => {
+  const byType = data.findingsByType || {};
+  const byRisk = data.scansByRisk || {};
+  const typeEntries = Object.entries(byType).sort((a,b) => b[1]-a[1]).slice(0, 8);
+  const max = Math.max(1, ...typeEntries.map(([,n]) => Number(n) || 0));
+  const bars = typeEntries.map(([label, count]) => {
+    const pct = Math.round((Number(count) / max) * 100);
+    return `<div style="margin:.35rem 0"><div style="display:flex;justify-content:space-between;font:700 10px Consolas,monospace;color:var(--text-muted)"><span>${escapeHtml(label)}</span><span>${escapeHtml(count)}</span></div><div style="height:8px;background:#0b1220;border:1px solid #1e2a3a;border-radius:999px;overflow:hidden"><div style="height:100%;width:${pct}%;background:linear-gradient(90deg,#22d3ee,#38bdf8)"></div></div></div>`;
+  }).join("") || '<div class="empty-state">No analytics yet.</div>';
+  const risk = Object.entries(byRisk).map(([k,v]) => `${escapeHtml(k)}:${escapeHtml(v)}`).join(" · ") || "-";
+  document.getElementById("analytics-wrap").innerHTML = `
+    <div style="font:700 11px Consolas,monospace;color:var(--text-muted);margin-bottom:.5rem">Scans ${escapeHtml(data.scanCount||0)} · Rules ${escapeHtml(data.customRuleCount||0)} · Remediations ${escapeHtml(data.remediationCount||0)}</div>
+    <div style="font:700 10px Consolas,monospace;color:var(--text-muted);margin-bottom:.75rem">Risk mix: ${risk}</div>
+    ${bars}`;
+};
+
+const renderRules = (rules = []) => {
+  if (!rules.length) {
+    document.getElementById("rules-wrap").innerHTML = '<div class="empty-state">No custom rules.</div>';
+    return;
+  }
+  document.getElementById("rules-wrap").innerHTML = `<table class="data-matrix"><thead><tr><th>Name</th><th>Label</th></tr></thead><tbody>${rules.slice(0,8).map(r => `<tr><td>${escapeHtml(r.name)}</td><td style="opacity:.7">${escapeHtml(r.label)}</td></tr>`).join("")}</tbody></table>`;
+};
+
+const renderRemediations = (items = []) => {
+  if (!items.length) {
+    document.getElementById("remediation-wrap").innerHTML = '<div class="empty-state">Queue empty.</div>';
+    return;
+  }
+  document.getElementById("remediation-wrap").innerHTML = `<table class="data-matrix"><thead><tr><th>Condition</th><th>Owner</th><th>Status</th></tr></thead><tbody>${items.slice(0,8).map(item => `<tr><td>${escapeHtml(item.condition)}</td><td>${escapeHtml(item.owner)}</td><td>${escapeHtml(item.status || 'open')}</td></tr>`).join("")}</tbody></table>`;
+};
+
+const originalLoadV2Data = loadV2Data;
+loadV2Data = async () => {
+  await originalLoadV2Data();
+  if (!state.token) return;
+  try {
+    const headers = { Authorization: `Bearer ${state.token}` };
+    const [rulesRes, analyticsRes, remRes] = await Promise.all([
+      fetch("/api/v2/custom-rules", { headers }).catch(() => ({ ok: false })),
+      fetch("/api/v2/analytics", { headers }).catch(() => ({ ok: false })),
+      fetch("/api/v2/remediations", { headers }).catch(() => ({ ok: false })),
+    ]);
+    if (rulesRes.ok) renderRules((await rulesRes.json()).rules || []);
+    if (analyticsRes.ok) renderAnalytics(await analyticsRes.json());
+    if (remRes.ok) renderRemediations((await remRes.json()).remediations || []);
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+document.getElementById("rule-form")?.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  if (!state.token) { ui.toast("Authenticate first.", "err"); return; }
+  const payload = Object.fromEntries(new FormData(e.target).entries());
+  ui.setLoading("rule-btn", true);
+  try {
+    const res = await fetch("/api/v2/custom-rules", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${state.token}` },
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || "Could not save rule");
+    ui.toast("Custom rule saved.", "ok");
+    e.target.reset();
+    loadV2Data();
+  } catch (err) {
+    ui.toast(String(err.message || err), "err");
+  } finally {
+    ui.setLoading("rule-btn", false);
+  }
+});
+
+document.getElementById("remediation-form")?.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  if (!state.token) { ui.toast("Authenticate first.", "err"); return; }
+  const payload = Object.fromEntries(new FormData(e.target).entries());
+  ui.setLoading("remediation-btn", true);
+  try {
+    const res = await fetch("/api/v2/remediations", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${state.token}` },
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || "Could not queue remediation");
+    ui.toast("Remediation queued.", "ok");
+    e.target.reset();
+    loadV2Data();
+  } catch (err) {
+    ui.toast(String(err.message || err), "err");
+  } finally {
+    ui.setLoading("remediation-btn", false);
+  }
+});
 
     // ====== INITIALIZATION ======
     if (state.token) {

@@ -6,6 +6,8 @@ import json
 import os
 import secrets
 import sqlite3
+import re
+import time
 from datetime import datetime, timedelta, timezone
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
@@ -77,6 +79,9 @@ POPIA_CONDITION_MAP = {
 STORAGE_BACKEND = "json-file"
 DB_CONN: sqlite3.Connection | None = None
 DB_LOCK = Lock()
+LOGIN_ATTEMPTS: dict[str, list[float]] = {}
+LOGIN_WINDOW_SECONDS = 15 * 60
+LOGIN_MAX_ATTEMPTS = 8
 
 
 class RequestError(Exception):
@@ -95,7 +100,15 @@ def now_iso() -> str:
 
 
 def hash_password(password: str) -> str:
-    return hashlib.sha256(f"{AUTH_SALT}:{password}".encode("utf-8")).hexdigest()
+    derived = hashlib.pbkdf2_hmac("sha256", password.encode("utf-8"), AUTH_SALT.encode("utf-8"), 310_000)
+    return f"pbkdf2_sha256$310000${derived.hex()}"
+
+
+def verify_password(password: str, stored: str) -> bool:
+    if stored.startswith("pbkdf2_sha256$"):
+        return secure_equals(stored, hash_password(password))
+    legacy = hashlib.sha256(f"{AUTH_SALT}:{password}".encode("utf-8")).hexdigest()
+    return secure_equals(stored, legacy)
 
 
 def secure_equals(left: str, right: str) -> bool:
@@ -155,6 +168,7 @@ def default_state() -> dict[str, Any]:
             }
         ],
         "reportJobs": [],
+        "customRules": [],
     }
 
 
@@ -242,6 +256,36 @@ validate_runtime_config()
 STATE = init_state()
 
 
+
+def apply_custom_rules(text: str, rules: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    findings: list[dict[str, Any]] = []
+    for rule in rules:
+        if not rule.get("enabled", True):
+            continue
+        pattern = str(rule.get("pattern") or "")
+        label = str(rule.get("label") or rule.get("name") or "CUSTOM")
+        try:
+            compiled = re.compile(pattern)
+        except re.error:
+            continue
+        for match in compiled.finditer(text[:200_000]):
+            value = match.group(0)
+            masked = value[:2] + ("*" * max(len(value) - 4, 0)) + value[-2:] if len(value) > 4 else "****"
+            findings.append(
+                {
+                    "label": label,
+                    "pii_type": label,
+                    "value_masked": masked,
+                    "confidence": 0.72,
+                    "source": "custom-rule",
+                    "ruleId": rule.get("id"),
+                }
+            )
+            if len(findings) >= 50:
+                return findings
+    return findings
+
+
 class Handler(BaseHTTPRequestHandler):
     def log_message(self, format: str, *args: Any) -> None:
         return
@@ -264,6 +308,8 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header("X-Frame-Options", "DENY")
         self.send_header("Referrer-Policy", "no-referrer")
         self.send_header("Cache-Control", "no-store")
+        self.send_header("Permissions-Policy", "camera=(), microphone=(), geolocation=()")
+        self.send_header("Content-Security-Policy", "default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'")
 
     def _read_json(self) -> dict[str, Any]:
         length_raw = self.headers.get("Content-Length", "0")
@@ -361,10 +407,19 @@ class Handler(BaseHTTPRequestHandler):
         findings = detect_pii(text)
         summary = to_api_summary(build_compliance_summary(findings))
         masked = [{"label": finding.label, "value_masked": mask_value(finding.value), "confidence": finding.confidence} for finding in findings]
+        custom_findings = apply_custom_rules(text, STATE.get("customRules", []))
+        if custom_findings:
+            masked = list(masked) + custom_findings
+            # keep summary counts roughly aligned for operator visibility
+            try:
+                summary["totalFindings"] = int(summary.get("totalFindings") or summary.get("total_findings") or 0) + len(custom_findings)
+            except Exception:
+                pass
         scan = {
             "id": f"scan-{secrets.token_hex(4)}",
             "createdAt": now_iso(),
             "summary": summary,
+            "findings": masked,
         }
         STATE["scans"].insert(0, scan)
         save_state(STATE)
@@ -414,6 +469,42 @@ class Handler(BaseHTTPRequestHandler):
                 self._send_json(200, {"policyProfiles": STATE["policyProfiles"]})
                 return
 
+            if path == "/api/v2/custom-rules":
+                allowed, _, reason = self._authorize("read")
+                if not allowed:
+                    self._send_json(401, {"error": reason})
+                    return
+                self._send_json(200, {"rules": STATE.get("customRules", [])})
+                return
+
+            if path == "/api/v2/analytics":
+                allowed, _, reason = self._authorize("read")
+                if not allowed:
+                    self._send_json(401, {"error": reason})
+                    return
+                scans = STATE.get("scans", [])
+                by_type: dict[str, int] = {}
+                by_risk: dict[str, int] = {}
+                for scan in scans:
+                    summary = scan.get("summary") or {}
+                    risk = str(summary.get("riskLevel") or summary.get("risk_level") or "low").lower()
+                    by_risk[risk] = by_risk.get(risk, 0) + 1
+                    findings = scan.get("findings") or []
+                    for finding in findings:
+                        label = str(finding.get("label") or finding.get("pii_type") or "UNKNOWN").upper()
+                        by_type[label] = by_type.get(label, 0) + 1
+                self._send_json(
+                    200,
+                    {
+                        "scanCount": len(scans),
+                        "remediationCount": len(STATE.get("remediations", [])),
+                        "customRuleCount": len(STATE.get("customRules", [])),
+                        "findingsByType": by_type,
+                        "scansByRisk": by_risk,
+                    },
+                )
+                return
+
             if path == "/api/v2/report-jobs":
                 allowed, _, reason = self._authorize("read")
                 if not allowed:
@@ -431,17 +522,28 @@ class Handler(BaseHTTPRequestHandler):
         try:
             if path == "/api/auth/login":
                 payload = self._read_json()
+                client_ip = self.client_address[0] if self.client_address else "unknown"
+                now = time.monotonic()
+                attempts = [stamp for stamp in LOGIN_ATTEMPTS.get(client_ip, []) if now - stamp < LOGIN_WINDOW_SECONDS]
+                if len(attempts) >= LOGIN_MAX_ATTEMPTS:
+                    self._send_json(429, {"error": "Too many login attempts. Try again later."})
+                    return
                 missing = validate_required(payload, ["username", "password"])
                 if missing:
                     self._send_json(400, {"error": f"Missing fields: {', '.join(missing)}"})
                     return
                 user = next((item for item in STATE["users"] if item["username"] == payload["username"]), None)
-                success = bool(user and secure_equals(user["passwordHash"], hash_password(payload["password"])))
+                success = bool(user and verify_password(str(payload["password"]), user["passwordHash"]))
                 self._record_auth_audit("login", payload["username"], success)
                 if not success:
+                    attempts.append(now)
+                    LOGIN_ATTEMPTS[client_ip] = attempts
                     save_state(STATE)
                     self._send_json(401, {"error": "Invalid username or password."})
                     return
+                LOGIN_ATTEMPTS.pop(client_ip, None)
+                if user and not user["passwordHash"].startswith("pbkdf2_sha256$"):
+                    user["passwordHash"] = hash_password(str(payload["password"]))
                 access = self._issue_token(user, "access")
                 refresh = self._issue_token(user, "refresh")
                 save_state(STATE)
@@ -560,6 +662,43 @@ class Handler(BaseHTTPRequestHandler):
                     "strictness": payload.get("strictness", "balanced"),
                 }
                 STATE["policyProfiles"].insert(0, item)
+                save_state(STATE)
+                self._send_json(201, item)
+                return
+
+            if path == "/api/v2/custom-rules":
+                allowed, _, reason = self._authorize("write")
+                if not allowed:
+                    self._send_json(401, {"error": reason})
+                    return
+                payload = self._read_json()
+                missing = validate_required(payload, ["name", "pattern", "label"])
+                if missing:
+                    self._send_json(400, {"error": f"Missing fields: {', '.join(missing)}"})
+                    return
+                name = str(payload["name"])[:80]
+                label = str(payload["label"])[:80]
+                pattern = str(payload["pattern"])[:200]
+                if len(pattern) < 3:
+                    self._send_json(400, {"error": "Pattern too short."})
+                    return
+                if any(token in pattern for token in ["(?", "*+", "++", "{", "\1"]):
+                    self._send_json(400, {"error": "Pattern uses disallowed constructs."})
+                    return
+                try:
+                    re.compile(pattern)
+                except re.error as exc:
+                    self._send_json(400, {"error": f"Invalid regex: {exc}"})
+                    return
+                item = {
+                    "id": f"rule-{secrets.token_hex(4)}",
+                    "createdAt": now_iso(),
+                    "name": name,
+                    "label": label,
+                    "pattern": pattern,
+                    "enabled": bool(payload.get("enabled", True)),
+                }
+                STATE.setdefault("customRules", []).insert(0, item)
                 save_state(STATE)
                 self._send_json(201, item)
                 return

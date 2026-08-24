@@ -1,0 +1,68 @@
+{
+  "schemaVersion": "1.0",
+  "slug": "roadmap",
+  "title": "Roadmap",
+  "status": "current",
+  "audience": [
+    "Compliance operators",
+    "Security reviewers",
+    "Contributors"
+  ],
+  "useWhen": "Use the corresponding current guide for this task.",
+  "sourceOfTruth": "current/roadmap.md",
+  "counterparts": {
+    "markdown": "current/roadmap.md",
+    "html": "current/roadmap.html",
+    "json": "current/roadmap.json"
+  },
+  "summary": "Current roadmap guidance for ComplianceKit.",
+  "sections": [
+    {
+      "id": "purpose",
+      "label": "Purpose"
+    },
+    {
+      "id": "on-this-page",
+      "label": "On this page"
+    },
+    {
+      "id": "guidance",
+      "label": "Guidance"
+    },
+    {
+      "id": "verification",
+      "label": "Verification"
+    },
+    {
+      "id": "related-guides",
+      "label": "Related guides"
+    },
+    {
+      "id": "completed-delivery",
+      "label": "Completed delivery"
+    },
+    {
+      "id": "current-maintenance",
+      "label": "Current maintenance"
+    }
+  ],
+  "relatedGuides": [
+    "start-here",
+    "architecture",
+    "quality",
+    "contributing"
+  ],
+  "keywords": [
+    "compliancekit",
+    "roadmap",
+    "documentation",
+    "current"
+  ],
+  "lastReviewed": "2026-07-13",
+  "sourceChecksum": "74953a4d6eea0121808212b56da23a228d7eb9b7fd45725925e685850ffceb78",
+  "generatedAt": "2026-07-13T11:47:55.581677+00:00",
+  "release": "archive-2026-07-13",
+  "validation": {
+    "state": "generated"
+  }
+}

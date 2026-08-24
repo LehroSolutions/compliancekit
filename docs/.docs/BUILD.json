@@ -1,0 +1,14 @@
+{
+  "product": "ComplianceKit",
+  "title": "Build",
+  "group": "Project",
+  "path": ".docs/BUILD.md",
+  "lead": "ComplianceKit is a POPIA-focused toolkit for South African PII discovery, risk classification, and compliance reporting. It provides a core Python library, a CLI tool, and a self-h",
+  "content_markdown": "# ComplianceKit - Build Guide\n\n## Purpose\nComplianceKit is a POPIA-focused toolkit for South African PII discovery, risk classification, and compliance reporting. It provides a core Python library, a CLI tool, and a self-hosted web application.\n\n## Project Scope\n- **Core Library**: Regex/rule-based PII detection engine with Luhn validation for South African IDs.\n- **Compliance Engine**: Mapping findings to POPIA conditions and generating risk summaries.\n- **CLI Tool**: Command-line interface for scanning files or stdin.\n- **Web Application**: HTTP server with authentication, RBAC, scan history, and a cyan \"POPIA Radar\" dashboard.\n- **Persistent Storage**: SQLite database with JSON-file fallback.\n- **Docker Integration**: Containerized deployment support.\n\n## Project Structure\n- `compliancekit/pii.py`: PII detection primitives and regex patterns.\n- `compliancekit/popia.py`: POPIA condition mapping and risk scoring logic.\n- `compliancekit/cli.py`: CLI entrypoint and output masking.\n- `webapp/server.py`: HTTP API server, authentication, and persistence logic.\n- `webapp/index.html`: Dashboard UI.\n- `tests/`: Unit tests for detection, compliance logic, and server configuration.\n- `Dockerfile`: Container build instructions.\n- `pyproject.toml`: Package metadata and dependencies.\n\n## Local Development\n1. **Environment Setup**:\n   ```bash\n   python -m venv venv\n   source venv/bin/activate  # or venv\\Scripts\\activate on Windows\n   pip install -e .\n   ```\n2. **Running Tests**:\n   ```bash\n   python -m unittest discover -s tests -p \"test_*.py\" -v\n   ```\n3. **Running Webapp**:\n   ```bash\n   cp .env.example .env\n   # Update .env as needed\n   python webapp/server.py\n   ```\n\n## Quality Gates\n- **SA ID Validation**: All ID numbers must pass Luhn checksum validation.\n- **Contextual Detection**: Bank and Tax numbers require keyword context to reduce false positives.\n- **Data Minimization**: No raw PII is stored; only masked or redacted values are persisted.\n- **Production Guardrails**: The server rejects insecure default credentials when `APP_ENV=production`.\n- **CI/CD**: All pushes must pass the GitHub Actions pipeline (`ci.yml`).\n",
+  "layout": "quantumide-ultra-link",
+  "theme": {
+    "mode": "dark",
+    "accent": "#e2ff33",
+    "css": "design-system.css"
+  }
+}

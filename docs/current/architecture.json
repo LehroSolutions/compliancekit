@@ -1,0 +1,71 @@
+{
+  "schemaVersion": "1.0",
+  "slug": "architecture",
+  "title": "Architecture",
+  "status": "current",
+  "audience": [
+    "Compliance operators",
+    "Security reviewers",
+    "Contributors"
+  ],
+  "useWhen": "Use the corresponding current guide for this task.",
+  "sourceOfTruth": "current/architecture.md",
+  "counterparts": {
+    "markdown": "current/architecture.md",
+    "html": "current/architecture.html",
+    "json": "current/architecture.json"
+  },
+  "summary": "Current architecture guidance for ComplianceKit.",
+  "sections": [
+    {
+      "id": "purpose",
+      "label": "Purpose"
+    },
+    {
+      "id": "on-this-page",
+      "label": "On this page"
+    },
+    {
+      "id": "guidance",
+      "label": "Guidance"
+    },
+    {
+      "id": "verification",
+      "label": "Verification"
+    },
+    {
+      "id": "related-guides",
+      "label": "Related guides"
+    },
+    {
+      "id": "system-map",
+      "label": "System map"
+    },
+    {
+      "id": "ownership-boundaries",
+      "label": "Ownership boundaries"
+    },
+    {
+      "id": "safe-change-sequence",
+      "label": "Safe change sequence"
+    }
+  ],
+  "relatedGuides": [
+    "start-here",
+    "quality",
+    "contributing"
+  ],
+  "keywords": [
+    "compliancekit",
+    "architecture",
+    "documentation",
+    "current"
+  ],
+  "lastReviewed": "2026-07-13",
+  "sourceChecksum": "caab0212574b7fc012e15e07445ba3852fa4c78834d4b00d0733977d488702c0",
+  "generatedAt": "2026-07-13T11:47:55.580392+00:00",
+  "release": "archive-2026-07-13",
+  "validation": {
+    "state": "generated"
+  }
+}
