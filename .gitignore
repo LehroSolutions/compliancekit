@@ -1,22 +1,28 @@
+node_modules/
+dist/
+build/
+coverage/
+*.log
+.env*
+!.env.example
+.venv/
+venv/
 __pycache__/
 *.py[cod]
 *.egg-info/
+.DS_Store
+Thumbs.db
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
 .pytest_cache/
-.venv/
-venv/
+.pytest-cache-files-*
+.pytest-tmp*
 
+# Repo-specific
 webapp/data.json
 webapp/data.sqlite
 
-.env
+# Large media assets stay local only
 advertising video/
-node_modules/
-.env.*
-!.env.example
-coverage/
-dist/
-.DS_Store
-*.log
-
-# Bun is the canonical package manager and lockfile authority
-package-lock.json
+*.mp4
