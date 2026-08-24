@@ -45,6 +45,7 @@ APP_ROLE = os.getenv("APP_ROLE", "admin")
 ACCESS_TTL_MIN = _env_int("ACCESS_TTL_MIN", 15)
 REFRESH_TTL_DAYS = _env_int("REFRESH_TTL_DAYS", 7)
 MAX_BODY_BYTES = _env_int("MAX_BODY_BYTES", 1024 * 1024)
+MAX_SCAN_TEXT_CHARS = _env_int("MAX_SCAN_TEXT_CHARS", 200_000)
 ROLE_SCOPES = {
     "admin": ["read", "write", "admin"],
     "operator": ["read", "write"],
@@ -146,6 +147,8 @@ def validate_runtime_config() -> None:
         raise RuntimeError("REFRESH_TTL_DAYS must be greater than 0.")
     if MAX_BODY_BYTES <= 0:
         raise RuntimeError("MAX_BODY_BYTES must be greater than 0.")
+    if MAX_SCAN_TEXT_CHARS <= 0:
+        raise RuntimeError("MAX_SCAN_TEXT_CHARS must be greater than 0.")
     if APP_ENV in {"prod", "production"}:
         if APP_PASS == DEFAULT_APP_PASS:
             raise RuntimeError("APP_PASS uses an insecure default in production.")
@@ -422,6 +425,7 @@ class Handler(BaseHTTPRequestHandler):
             "findings": masked,
         }
         STATE["scans"].insert(0, scan)
+        del STATE["scans"][500:]  # cap retained scans so state cannot grow unbounded
         save_state(STATE)
         return {"summary": summary, "findings": masked}
 
@@ -604,8 +608,12 @@ class Handler(BaseHTTPRequestHandler):
                 return
 
             if path == "/api/scan":
+                allowed, _, reason = self._authorize("write")
+                if not allowed:
+                    self._send_json(401, {"error": reason})
+                    return
                 payload = self._read_json()
-                text = str(payload.get("text", ""))
+                text = str(payload.get("text", ""))[:MAX_SCAN_TEXT_CHARS]
                 self._send_json(200, self._create_scan(text))
                 return
 
@@ -615,7 +623,7 @@ class Handler(BaseHTTPRequestHandler):
                     self._send_json(401, {"error": reason})
                     return
                 payload = self._read_json()
-                text = str(payload.get("text", ""))
+                text = str(payload.get("text", ""))[:MAX_SCAN_TEXT_CHARS]
                 result = self._create_scan(text)
                 self._send_json(201, {"id": STATE["scans"][0]["id"], "summary": result["summary"]})
                 return
@@ -682,7 +690,20 @@ class Handler(BaseHTTPRequestHandler):
                 if len(pattern) < 3:
                     self._send_json(400, {"error": "Pattern too short."})
                     return
-                if any(token in pattern for token in ["(?", "*+", "++", "{", "\1"]):
+                if any(token in pattern for token in ["(", ")", "(?", "*+", "++", "\\1"]):
+                    self._send_json(400, {"error": "Pattern uses disallowed constructs."})
+                    return
+                # Allow only small bounded-quantifier braces ({n} / {n,m}); any
+                # other brace use is rejected to avoid backtracking blowups.
+                for token in re.findall(r"\{[^{}]*\}|\{", pattern):
+                    if not re.fullmatch(r"\{\d{1,3}(,\d{1,3})?\}", token) or max(
+                        int(part) for part in token.strip("{}").split(",") if part
+                    ) > 1000:
+                        self._send_json(400, {"error": "Pattern uses disallowed constructs."})
+                        return
+                # Reject stacked quantifiers (e.g. a** or a++ variants that slip
+                # past the literal check) which can cause catastrophic backtracking.
+                if re.search(r"[*+]\s*[*+]", pattern):
                     self._send_json(400, {"error": "Pattern uses disallowed constructs."})
                     return
                 try:
