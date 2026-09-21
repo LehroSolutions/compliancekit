@@ -1,10 +1,9 @@
 from __future__ import annotations
 
 from collections import Counter
-from typing import Sequence
+from collections.abc import Sequence
 
 from .pii import PIIFinding
-
 
 POPIA_CONDITIONS: dict[str, str] = {
     "accountability": "Accountability",

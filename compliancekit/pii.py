@@ -1,9 +1,8 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
 import re
-from typing import Callable, Iterable
-
+from collections.abc import Callable, Iterable
+from dataclasses import dataclass
 
 SA_ID_NUMBER = re.compile(r"\b\d{2}(0[1-9]|1[0-2])(0[1-9]|[12]\d|3[01])\d{4}[01]\d{2}\b")
 SA_PHONE = re.compile(r"(?<!\d)(?:\+27|0)[1-8]\d{8}(?!\d)")

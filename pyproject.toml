@@ -18,3 +18,21 @@ compliancekit = "compliancekit.cli:main"
 [tool.setuptools.packages.find]
 include = ["compliancekit*"]
 
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.0",
+  "ruff>=0.4",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint.per-file-ignores]
+# The webapp HTTP server is deliberately red-team hardened: broad exception
+# handling and silent drops prevent internal details from leaking to clients.
+"webapp/*" = ["BLE001", "S110", "PLR0124", "TRY004", "RUF012", "RUF034", "FURB162"]
+

@@ -4,11 +4,11 @@ import hashlib
 import hmac
 import json
 import os
+import re
 import secrets
 import sqlite3
-import re
 import time
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
 from threading import Lock
@@ -93,7 +93,7 @@ class RequestError(Exception):
 
 
 def utc_now() -> datetime:
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)
 
 
 def now_iso() -> str:
@@ -108,7 +108,7 @@ def hash_password(password: str) -> str:
 def verify_password(password: str, stored: str) -> bool:
     if stored.startswith("pbkdf2_sha256$"):
         return secure_equals(stored, hash_password(password))
-    legacy = hashlib.sha256(f"{AUTH_SALT}:{password}".encode("utf-8")).hexdigest()
+    legacy = hashlib.sha256(f"{AUTH_SALT}:{password}".encode()).hexdigest()
     return secure_equals(stored, legacy)
 
 
