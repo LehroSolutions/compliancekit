@@ -17,6 +17,7 @@ compliancekit = "compliancekit.cli:main"
 
 [tool.setuptools.packages.find]
 include = ["compliancekit*"]
+namespaces = false
 
 [project.optional-dependencies]
 dev = [

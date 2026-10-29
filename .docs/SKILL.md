@@ -22,7 +22,7 @@ ComplianceKit scans free-form text for South African PII (ID numbers with Luhn v
 |-------|-----------|
 | Runtime | Python 3.11+ (stdlib only) |
 | Server | `http.server` |
-| Storage | SQLite (`sqlite3`) with JSON-file fallback |
+| Storage | SQLite (`sqlite3`) or explicitly selected JSON-file storage |
 | Auth | SHA-256 + hmac bearer tokens |
 | Port | 5101 |
 

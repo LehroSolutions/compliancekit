@@ -8,7 +8,7 @@ ComplianceKit is a POPIA-focused toolkit for South African PII discovery, risk c
 - **Compliance Engine**: Mapping findings to POPIA conditions and generating risk summaries.
 - **CLI Tool**: Command-line interface for scanning files or stdin.
 - **Web Application**: HTTP server with authentication, RBAC, scan history, and a cyan "POPIA Radar" dashboard.
-- **Persistent Storage**: SQLite database with JSON-file fallback.
+- **Persistent Storage**: SQLite database or explicitly selected JSON-file storage; initialization errors stop startup.
 - **Docker Integration**: Containerized deployment support.
 
 ## Project Structure

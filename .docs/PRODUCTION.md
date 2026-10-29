@@ -20,7 +20,7 @@ Production behavior is controlled via environment variables.
 
 ## Runtime Backend
 - **SQLite**: The server attempts to use `webapp/data.sqlite` for persistence.
-- **JSON Fallback**: If SQLite is unavailable, it falls back to `webapp/data.json`.
+- **Explicit JSON mode**: `APP_STORAGE=json` selects `APP_DATA_FILE`. SQLite errors stop startup; they never switch stores. Set `APP_DB_FILE` for a persistent database location.
 - **Monitoring**: Use the `/api/ready` endpoint to check the active storage backend.
 
 ## Production Hardening
@@ -40,5 +40,5 @@ docker run -p 5101:5101 \
 ```
 
 ## Maintenance
-- **Data Retention**: Periodically clear `webapp/data.sqlite` or rotate the file if needed.
+- **Data Retention**: Keep restricted, verified backups and apply the documented collection caps. Do not delete the live store for routine maintenance. See [operations and recovery](../OPERATIONS.md).
 - **Rule Updates**: Monitor `compliancekit/pii.py` for pattern updates to SA legal requirements.

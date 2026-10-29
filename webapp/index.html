@@ -822,9 +822,9 @@
 
     // ====== RENDERING ======
     const formatConfidence = (conf) => {
-      if (conf > 0.8) return { class: "badge-critical", label: "CRITICAL" };
-      if (conf > 0.5) return { class: "badge-high", label: "HIGH RISK" };
-      return { class: "badge-medium", label: "MODERATE" };
+      if (conf > 0.8) return { class: "badge-critical", label: "HIGH CONF." };
+      if (conf > 0.5) return { class: "badge-high", label: "MEDIUM CONF." };
+      return { class: "badge-medium", label: "LOW CONF." };
     };
 
     const renderFindings = (data) => {
@@ -1014,6 +1014,7 @@
     });
 
     document.getElementById("scan-btn").addEventListener("click", async () => {
+      if (!state.token) { ui.toast("Authenticate before scanning.", "err"); return; }
       const text = document.getElementById("scan-input").value;
       if (!text.trim()) {
         ui.toast("Input stream empty.", "err");
@@ -1024,7 +1025,7 @@
       try {
         const res = await fetch("/api/scan", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${state.token}` },
           body: JSON.stringify({ text })
         });
         const result = await res.json().catch(() => ({}));
@@ -1054,7 +1055,7 @@
       try {
         const res = await fetch("/api/ai/remediate", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${state.token}` },
           body: JSON.stringify({ findings: state.lastFindings })
         });
         const data = await res.json().catch(() => ({}));
@@ -1072,13 +1073,26 @@
 
 
     document.getElementById("bulk-files").addEventListener("change", async (event) => {
+      if (!state.token) { ui.toast("Authenticate before scanning.", "err"); event.target.value = ""; return; }
       const files = [...event.target.files].slice(0, 20);
-      for (const file of files) {
-        if (file.size > 512000) { ui.toast(`${file.name} exceeds 500 KB.`, "err"); continue; }
-        const res = await fetch("/api/scan", {method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({text:await file.text()})});
-        if (res.ok) renderFindings(await res.json());
+      try {
+        for (const file of files) {
+          if (file.size > 512000) { ui.toast(`${file.name} exceeds 500 KB.`, "err"); continue; }
+          const res = await fetch("/api/scan", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${state.token}` },
+            body: JSON.stringify({ text: await file.text() })
+          });
+          const result = await res.json();
+          if (!res.ok) throw new Error(result.error || "Bulk scan failed.");
+          renderFindings(result);
+        }
+        loadV2Data();
+      } catch (error) {
+        ui.toast(error.message || "Bulk scan failed.", "err");
+      } finally {
+        event.target.value = "";
       }
-      if (state.token) loadV2Data(); event.target.value = "";
     });
     document.getElementById("export-btn").addEventListener("click", () => {
       const rows=[["type","masked_value","confidence"],...state.lastFindings.map(f=>[f.label,f.value_masked,f.confidence])];

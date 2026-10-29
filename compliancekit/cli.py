@@ -8,6 +8,8 @@ from pathlib import Path
 from .pii import PIIFinding, detect_pii
 from .popia import build_compliance_summary
 
+MAX_INPUT_CHARS = 1_000_000
+
 
 def _mask(value: str) -> str:
     if len(value) <= 4:
@@ -36,10 +38,18 @@ def main() -> int:
     )
     args = parser.parse_args()
 
-    if args.file:
-        text = args.file.read_text(encoding="utf-8")
-    else:
-        text = sys.stdin.read()
+    try:
+        if args.file:
+            with args.file.open(encoding="utf-8") as source:
+                text = source.read(MAX_INPUT_CHARS + 1)
+        else:
+            text = sys.stdin.read(MAX_INPUT_CHARS + 1)
+    except (OSError, UnicodeError):
+        print("Input must be a readable UTF-8 text file or stream.", file=sys.stderr)
+        return 2
+    if len(text) > MAX_INPUT_CHARS:
+        print(f"Input exceeds the {MAX_INPUT_CHARS:,} character limit.", file=sys.stderr)
+        return 2
 
     findings = detect_pii(text)
     summary = build_compliance_summary(findings)

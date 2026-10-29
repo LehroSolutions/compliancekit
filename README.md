@@ -1,4 +1,6 @@
 <p align="center">
+
+Deployment, release checks, persistence, backup, and rollback: [OPERATIONS.md](OPERATIONS.md).
   <h1 align="center">ComplianceKit</h1>
   <p align="center">
     <strong>POPIA-focused PII scanner and compliance toolkit for South African data patterns.</strong>
@@ -47,7 +49,7 @@ ComplianceKit ships as three things:
 | **Web Dashboard**               | Scan text, view color-coded results, track scan history, manage remediations                              |
 | **Role-Based Auth**             | Bearer token authentication with admin/operator/viewer roles and scope enforcement                        |
 | **Audit Trail**                 | Login, logout, and token refresh events are recorded                                                      |
-| **SQLite + JSON Fallback**      | Persistent storage with automatic SQLite, falling back to JSON when unavailable                           |
+| **SQLite or explicit JSON**      | Persistent storage with explicit backend selection and startup refusal on corruption                           |
 | **Docker Ready**                | Single-command deployment with the included `Dockerfile`                                                  |
 | **Zero Dependencies**           | Core library uses Python stdlib only — no external packages required                                      |
 
@@ -74,6 +76,10 @@ echo "ID number: 9001015009087" | compliancekit --json
 # Summary only (no individual findings)
 compliancekit --file document.txt --summary-only
 ```
+
+CLI input is bounded to 1,000,000 characters. Oversized input, unreadable files,
+and invalid UTF-8 return exit code 2 with a concise error; successful scans return
+0. Detailed CLI output masks matched values and never prints the original text.
 
 ### Run the Web Application
 
@@ -112,18 +118,20 @@ compliancekit/
 │   ├── popia.py                # POPIA condition mapping and risk scoring
 │   └── cli.py                  # CLI entrypoint (compliancekit command)
 ├── webapp/
-│   ├── server.py               # HTTP API server with auth, RBAC, and persistence
+│   ├── server.py               # HTTP API server (threaded) with auth, RBAC, and persistence
 │   └── index.html              # Single-page dashboard UI ("POPIA Radar")
 ├── tests/
 │   ├── test_pii.py             # PII detection pattern tests
 │   ├── test_popia.py           # POPIA summary behavior tests
 │   ├── test_server_runtime_config.py  # Production config guard tests
+│   ├── test_server_webapp.py  # Auth, scopes, body limits, regex guard, retention tests
 │   └── test_version.py         # Version consistency test
-├── convex/                     # Convex backend schema (optional cloud integration)
+├── convex/                     # UNUSED Convex mirror — the webapp does NOT use it; all 7
+│   │                            # functions are unauthenticated. Retained for reference only.
 │   ├── schema.ts               # Database tables: scans, findings, remediations, auditLog
 │   ├── queries.ts              # Reactive read functions
 │   └── mutations.ts            # Transactional write functions
-├── .docs/                      # Internal project documentation
+├── .docs/                      # Superseded duplicate documentation tree (see .docs/README.md)
 ├── .github/workflows/ci.yml    # GitHub Actions CI pipeline
 ├── Dockerfile                  # Container deployment
 ├── .env.example                # Environment variable template
@@ -136,41 +144,46 @@ compliancekit/
 
 ---
 
-## API Reference
+## Webapp API Reference
 
-### Public Endpoints (No Auth)
+The webapp (`webapp/server.py`) speaks JSON over HTTP on `APP_HOST:APP_PORT` (default
+`127.0.0.1:5101`). It has no TLS, no CORS, and no CSRF protection — terminate TLS and put it
+behind a reverse proxy before exposing it beyond localhost.
 
-| Method | Path          | Description                                   |
-| ------ | ------------- | --------------------------------------------- |
-| `GET`  | `/`           | Serves the web dashboard                      |
-| `GET`  | `/api/health` | Health check                                  |
-| `GET`  | `/api/ready`  | Readiness check (reports storage backend)     |
-| `POST` | `/api/scan`   | Scan text for PII (body: `{ "text": "..." }`) |
+### Unauthenticated endpoints
 
-### Authentication
+| Method | Path          | Description                                |
+| ------ | ------------- | ------------------------------------------ |
+| `GET`  | `/`           | Serves the web dashboard                   |
+| `GET`  | `/api/health` | Liveness check                            |
+| `GET`  | `/api/ready`  | Readiness check (reports storage backend)  |
+| `POST` | `/api/auth/login` | Exchange credentials for tokens (body: `{ "username", "password" }`) |
+| `POST` | `/api/auth/refresh` | Exchange a refresh token (body: `{ "refreshToken" }`) |
 
-| Method | Path                | Description                                                          |
-| ------ | ------------------- | -------------------------------------------------------------------- |
-| `POST` | `/api/auth/login`   | Login → access + refresh tokens (body: `{ "username", "password" }`) |
-| `POST` | `/api/auth/refresh` | Refresh access token (body: `{ "refreshToken" }`)                    |
-| `POST` | `/api/auth/logout`  | Revoke tokens                                                        |
+Everything else requires `Authorization: Bearer <accessToken>`. The token comparison is
+constant-time; the token is valid for `ACCESS_TTL_MIN` minutes.
 
-### Authenticated Endpoints (Bearer Token)
+### Authenticated endpoints
 
-| Method  | Path                       | Scope | Description                            |
-| ------- | -------------------------- | ----- | -------------------------------------- |
-| `GET`   | `/api/v2/scans`            | read  | List all scans                         |
-| `POST`  | `/api/v2/scans`            | write | Create authenticated scan              |
-| `GET`   | `/api/v2/remediations`     | read  | List remediations                      |
-| `POST`  | `/api/v2/remediations`     | write | Create remediation item                |
-| `PATCH` | `/api/v2/remediations/:id` | write | Update remediation status/owner        |
-| `GET`   | `/api/v2/policies`         | read  | List policy profiles                   |
-| `POST`  | `/api/v2/policies`         | write | Create policy profile                  |
-| `GET`   | `/api/v2/report-jobs`      | read  | List report jobs                       |
-| `POST`  | `/api/v2/report-jobs`      | write | Queue a report job                     |
-| `POST`  | `/api/ai/remediate`        | —     | Generate POPIA remediation action plan |
+| Method  | Path                       | Scope | Description                                        |
+| ------- | -------------------------- | ----- | -------------------------------------------------- |
+| `POST`  | `/api/scan`                | write | Scan text for PII (body: `{ "text": "..." }`)       |
+| `POST`  | `/api/auth/logout`         | read  | Revoke the caller's tokens (body: `{ "refreshToken" }`) |
+| `GET`   | `/api/v2/scans`            | read  | List retained scans                                |
+| `POST`  | `/api/v2/scans`            | write | Create a scan, returns `{ id, summary }`            |
+| `GET`   | `/api/v2/remediations`     | read  | List remediations                                  |
+| `POST`  | `/api/v2/remediations`     | write | Create remediation item                            |
+| `PATCH` | `/api/v2/remediations/:id` | write | Update remediation status/owner                    |
+| `GET`   | `/api/v2/policies`         | read  | List policy profiles                               |
+| `POST`  | `/api/v2/policies`         | write | Create policy profile                              |
+| `GET`   | `/api/v2/custom-rules`     | read  | List custom detection rules                        |
+| `POST`  | `/api/v2/custom-rules`     | write | Create a custom rule                               |
+| `GET`   | `/api/v2/report-jobs`      | read  | List report jobs                                   |
+| `POST`  | `/api/v2/report-jobs`      | write | Queue a report job                                 |
+| `GET`   | `/api/v2/analytics`        | read  | Aggregate counts by PII type and risk level        |
+| `POST`  | `/api/ai/remediate`        | read  | Generate a POPIA remediation action plan (body: `{ "findings": [...] }`, max `MAX_REMEDIATE_FINDINGS` entries) |
 
-### Roles & Scopes
+### Roles & scopes
 
 | Role       | Scopes                   |
 | ---------- | ------------------------ |
@@ -178,26 +191,91 @@ compliancekit/
 | `operator` | `read`, `write`          |
 | `viewer`   | `read`                   |
 
+### Example flow
+
+```bash
+# 1. Log in and keep the access token
+TOKEN=$(curl -s -X POST http://127.0.0.1:5101/api/auth/login \
+  -H 'Content-Type: application/json' \
+  -d '{"username":"admin","password":"..."}' | python -c 'import json,sys; print(json.load(sys.stdin)["accessToken"])')
+
+# 2. Scan text
+curl -s -X POST http://127.0.0.1:5101/api/v2/scans \
+  -H "Authorization: Bearer $TOKEN" -H 'Content-Type: application/json' \
+  -d '{"text":"ID number: 9001015009087"}'
+
+# 3. Add a custom rule (patterns are length-capped and screened for backtracking shapes)
+curl -s -X POST http://127.0.0.1:5101/api/v2/custom-rules \
+  -H "Authorization: Bearer $TOKEN" -H 'Content-Type: application/json' \
+  -d '{"name":"Employee ref","label":"EMP_REF","pattern":"EMP-[0-9]{4}"}'
+
+# 4. Read the audit trail and log out
+curl -s -X POST http://127.0.0.1:5101/api/auth/logout \
+  -H "Authorization: Bearer $TOKEN" -H 'Content-Type: application/json' -d '{}'
+```
+
+A missing or invalid token returns `401`; an insufficient scope also returns `401` with
+`{"error": "Insufficient scope."}`. Repeated failed logins from one IP return `429` after
+`8` attempts in `15` minutes.
+
+### Custom rule limits
+
+Custom patterns are operator-supplied and run against every scan, so they are screened before
+they are ever compiled: `200` characters max, at most `8` quantifiers, no counted repeat above
+`64`, no quantifier on a group that itself contains a quantifier or an alternation, and no two
+adjacent quantified atoms whose character ranges overlap. Up to `100` rules may be stored and
+at most `25` are executed per scan. A rejected pattern returns `400`.
+
+---
+
+## Retention, Storage & Deletion
+
+ComplianceKit stores only **masked** PII — `90********87` — so a retained scan does not contain
+the value it detected. Retained collections are trimmed on every write to fixed ceilings, so
+state cannot grow without bound:
+
+| Collection | Retained | Rationale |
+| ---------- | -------- | --------- |
+| Scans | 500 | Operating history window |
+| Remediations | 500 | Compliance work items |
+| Policy profiles | 100 | Deployment configuration, not a ledger |
+| Report jobs | 200 | Render queue high-water mark |
+| Custom rules | 100 | Matches the write-time ceiling |
+| Auth audit log | 1000 | Login/logout/refresh events; horizon well beyond the refresh TTL |
+
+State uses SQLite by default. Set `APP_DB_FILE` to a persistent path or explicitly select
+`APP_STORAGE=json` with `APP_DATA_FILE`. Errors stop startup without switching stores.
+Findings are masked, but masking is not anonymization. Protect retained history and backups.
+There is no per-record deletion endpoint; a full-store deletion also removes accounts and sessions.
+Follow [OPERATIONS.md](OPERATIONS.md) for backup and recovery before planned data erasure.
+
 ---
 
 ## Configuration
 
 All configuration is via environment variables. See [`.env.example`](.env.example) for a template.
 
-| Variable           | Default                       | Description                                                    |
-| ------------------ | ----------------------------- | -------------------------------------------------------------- |
-| `APP_ENV`          | `development`                 | Set to `production` to enforce secure defaults                 |
-| `APP_HOST`         | `127.0.0.1`                   | Server bind address                                            |
-| `APP_PORT`         | `5101`                        | Server port                                                    |
-| `APP_USER`         | `admin`                       | Default username                                               |
-| `APP_PASS`         | `change-me-before-production` | Default password (**blocked in production if unchanged**)      |
-| `APP_ROLE`         | `admin`                       | Default user role (`admin` / `operator` / `viewer`)            |
-| `AUTH_SALT`        | `change-me-before-production` | Password hashing salt (**blocked in production if unchanged**) |
-| `ACCESS_TTL_MIN`   | `15`                          | Access token lifetime in minutes                               |
-| `REFRESH_TTL_DAYS` | `7`                           | Refresh token lifetime in days                                 |
-| `MAX_BODY_BYTES`   | `1048576`                     | Maximum request body size (1 MB)                               |
+| Variable                | Default                 | Description                                                                 |
+| ----------------------- | ----------------------- | --------------------------------------------------------------------------- |
+| `APP_ENV`               | `development`           | Only `development`/`dev` relax the credential checks below; **any other value fails closed** |
+| `APP_HOST`              | `127.0.0.1`             | Server bind address                                                         |
+| `APP_PORT`              | `5101`                  | Server port                                                                 |
+| `APP_USER`              | `admin`                 | Default username                                                            |
+| `APP_PASS`              | `admin123`              | Default password (**refused outside development**)                           |
+| `APP_ROLE`              | `admin`                 | Default user role (`admin` / `operator` / `viewer`)                         |
+| `AUTH_SALT`             | `compliancekit-salt`    | Password hashing salt (**refused outside development**)                      |
+| `ACCESS_TTL_MIN`        | `15`                    | Access token lifetime in minutes                                            |
+| `REFRESH_TTL_DAYS`      | `7`                     | Refresh token lifetime in days                                              |
+| `MAX_BODY_BYTES`        | `1048576`               | Maximum request body size (1 MB)                                            |
+| `MAX_SCAN_TEXT_CHARS`   | `200000`                | Maximum characters per scan; also the bound custom rules run against        |
+| `MAX_REMEDIATE_FINDINGS`| `200`                   | Maximum findings accepted by `POST /api/ai/remediate`                       |
 
-> **Production hardening:** When `APP_ENV=production`, the server will refuse to start if `APP_PASS` or `AUTH_SALT` still have their insecure defaults.
+> **Fail-closed startup:** the server refuses to boot unless `APP_ENV` is `development`/`dev`
+> **and** `APP_PASS` and `AUTH_SALT` are both real values. Empty strings and the shipped
+> placeholders (`admin123`, `compliancekit-salt`, `changeme`, `change-me-before-production`,
+> `password`) are all rejected. This means `APP_ENV=staging`, `APP_ENV=Production` and typos
+> fail closed rather than silently starting with default credentials — and copying
+> `.env.example` unchanged is *not* a way to satisfy the check.
 
 ---
 
@@ -205,10 +283,10 @@ All configuration is via environment variables. See [`.env.example`](.env.exampl
 
 ```bash
 # Run the full test suite
-python -m unittest discover -s tests -p "test_*.py" -v
+python -m pytest -q
 
-# Static compile check
-python -m py_compile webapp/server.py compliancekit/cli.py compliancekit/pii.py compliancekit/popia.py
+# Lint
+python -m ruff check .
 ```
 
 CI runs automatically on push and pull requests via GitHub Actions (`.github/workflows/ci.yml`).
@@ -223,6 +301,9 @@ All API and HTML responses include:
 - `X-Frame-Options: DENY`
 - `Referrer-Policy: no-referrer`
 - `Cache-Control: no-store`
+- `Permissions-Policy: camera=(), microphone=(), geolocation=()`
+- `Content-Security-Policy` — the dashboard's one inline `<script>` is authorised by a
+  per-response nonce, so `script-src` does not need `'unsafe-inline'`.
 
 ---
 
@@ -238,7 +319,7 @@ ComplianceKit is an open-source project by **Lehro Solutions**. Contributions ar
 
 Before submitting changes, please:
 
-1. Run the full test suite (`python -m unittest discover -s tests -p "test_*.py" -v`).
+1. Run `python -m pytest -q` and `python -m ruff check .`.
 2. Review the [`RELEASE_CHECKLIST.md`](RELEASE_CHECKLIST.md) for quality gates.
 3. Follow existing code conventions (stdlib only, no external dependencies in core).
 
@@ -271,22 +352,23 @@ The current public documentation is available in [`docs/index.html`](docs/index.
 - Remediation queue and analytics
 - Policy profiles and report jobs
 
-Documentation is maintained as canonical Markdown plus generated HTML and JSON counterparts. Run `pnpm docs:build` after changing `docs/current/*.md` and `pnpm docs:check` before a public release.
+Documentation is maintained as canonical Markdown plus generated HTML and JSON counterparts. Run `bun run docs:build` after changing `docs/current/*.md` and `bun run docs:check` before a public release. `docs:build` currently exits non-zero on purpose: no generator is vendored, so refreshing `sourceChecksum` requires the upstream docs packaging pipeline.
 <!-- docs-system:end -->
 
 <!-- bun-toolchain:start -->
 
 ## Bun and CI
 
-This repository uses **Bun 1.3.14** and targets **Node 24+** for JavaScript tooling and CI.
+This repository uses **Bun 1.3.14** to run the docs tooling, and targets **Node 24+** for
+JavaScript tooling and CI. The runtime itself is Python — `package.json` is a tooling stub
+with no JS runtime dependencies.
 
 ```bash
-rm -f package-lock.json
 bun install
-bun run build
-bun run test
 bun run docs:check
 ```
 
-Do not use `npm ci`; Bun is the canonical install path. Run `bun install` after dependency changes and commit the resulting `bun.lock`.
+There is no `bun run build` or `bun run test`; use `python -m pytest -q` and
+`python -m ruff check .`. Do not use `npm ci`; Bun is the canonical install path for the
+tooling scripts.
 <!-- bun-toolchain:end -->

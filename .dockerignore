@@ -1,0 +1,18 @@
+.git
+.venv
+venv
+node_modules
+__pycache__
+.pytest_cache
+.ruff_cache
+.env
+.env.*
+*.sqlite*
+*.db
+app/data.json
+webapp/data.json
+advertising video
+tests
+test
+dist
+build

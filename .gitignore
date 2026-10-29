@@ -18,6 +18,7 @@ yarn.lock
 .pytest_cache/
 .pytest-cache-files-*
 .pytest-tmp*
+.ruff_cache/
 
 # Repo-specific
 webapp/data.json
